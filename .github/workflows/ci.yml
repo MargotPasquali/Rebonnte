@@ -14,6 +14,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Create GoogleService-Info.plist
+        env:
+          GOOGLE_SERVICE_PLIST: ${{ secrets.GOOGLE_SERVICE_PLIST }}
+        run: |
+          mkdir -p Sources
+          echo "$GOOGLE_SERVICE_PLIST" > Sources/GoogleService-Info.plist
+
       - name: Build and Test
         uses: sersoft-gmbh/xcodebuild-action@v3.2.0
         with:
