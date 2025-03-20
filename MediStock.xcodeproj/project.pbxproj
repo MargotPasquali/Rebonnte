@@ -36,6 +36,7 @@
 		53E0D8EA2C066F7A00DE1134 /* HistoryEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8E92C066F7A00DE1134 /* HistoryEntry.swift */; };
 		53E0D8EC2C06717200DE1134 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8EB2C06717200DE1134 /* MainTabView.swift */; };
 		53E0D8EE2C06718100DE1134 /* AllMedicinesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8ED2C06718100DE1134 /* AllMedicinesView.swift */; };
+		AEE7ACE12D8B20A5003081EC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = AEE7ACE02D8B20A5003081EC /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -77,6 +78,7 @@
 		53E0D8E92C066F7A00DE1134 /* HistoryEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryEntry.swift; sourceTree = "<group>"; };
 		53E0D8EB2C06717200DE1134 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		53E0D8ED2C06718100DE1134 /* AllMedicinesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllMedicinesView.swift; sourceTree = "<group>"; };
+		AEE7ACE02D8B20A5003081EC /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -118,7 +120,8 @@
 		53E0D88A2C06084700DE1134 = {
 			isa = PBXGroup;
 			children = (
-				53E0D8952C06084700DE1134 /* MediStock */,
+				AEE7ACE22D8B2173003081EC /* Resources */,
+				53E0D8952C06084700DE1134 /* Sources */,
 				53E0D8A62C06084900DE1134 /* MediStockTests */,
 				53E0D8B02C06084900DE1134 /* MediStockUITests */,
 				53E0D8942C06084700DE1134 /* Products */,
@@ -135,26 +138,18 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		53E0D8952C06084700DE1134 /* MediStock */ = {
+		53E0D8952C06084700DE1134 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				53E0D8962C06084700DE1134 /* MediStockApp.swift */,
-				53E0D8982C06084700DE1134 /* ContentView.swift */,
-				53E0D89A2C06084900DE1134 /* Assets.xcassets */,
-				53E0D89C2C06084900DE1134 /* Preview Content */,
-				53E0D8D72C06097900DE1134 /* LoginView.swift */,
-				53E0D8D92C06098F00DE1134 /* MedicineListView.swift */,
-				53E0D8DB2C06099C00DE1134 /* Medicine.swift */,
-				53E0D8DD2C0609A800DE1134 /* MedicineStockViewModel.swift */,
-				53E0D8DF2C0609B900DE1134 /* SessionStore.swift */,
 				53E0D8E12C065FFE00DE1134 /* AppDelegate.swift */,
-				53E0D8E52C066F4100DE1134 /* AisleListView.swift */,
-				53E0D8E72C066F6500DE1134 /* MedicineDetailView.swift */,
-				53E0D8E92C066F7A00DE1134 /* HistoryEntry.swift */,
-				53E0D8EB2C06717200DE1134 /* MainTabView.swift */,
-				53E0D8ED2C06718100DE1134 /* AllMedicinesView.swift */,
+				AEE7ACE02D8B20A5003081EC /* GoogleService-Info.plist */,
+				53E0D8962C06084700DE1134 /* MediStockApp.swift */,
+				AEE7ACE62D8B22C0003081EC /* Managers */,
+				AEE7ACE52D8B22B0003081EC /* Models */,
+				AEE7ACE42D8B2296003081EC /* ViewModels */,
+				AEE7ACE32D8B21BC003081EC /* Views */,
 			);
-			path = MediStock;
+			path = Sources;
 			sourceTree = "<group>";
 		};
 		53E0D89C2C06084900DE1134 /* Preview Content */ = {
@@ -180,6 +175,54 @@
 				53E0D8B32C06084900DE1134 /* MediStockUITestsLaunchTests.swift */,
 			);
 			path = MediStockUITests;
+			sourceTree = "<group>";
+		};
+		AEE7ACE22D8B2173003081EC /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				53E0D89A2C06084900DE1134 /* Assets.xcassets */,
+				53E0D89C2C06084900DE1134 /* Preview Content */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		AEE7ACE32D8B21BC003081EC /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				53E0D8982C06084700DE1134 /* ContentView.swift */,
+				53E0D8D72C06097900DE1134 /* LoginView.swift */,
+				53E0D8D92C06098F00DE1134 /* MedicineListView.swift */,
+				53E0D8E52C066F4100DE1134 /* AisleListView.swift */,
+				53E0D8E72C066F6500DE1134 /* MedicineDetailView.swift */,
+				53E0D8EB2C06717200DE1134 /* MainTabView.swift */,
+				53E0D8ED2C06718100DE1134 /* AllMedicinesView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		AEE7ACE42D8B2296003081EC /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				53E0D8DD2C0609A800DE1134 /* MedicineStockViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		AEE7ACE52D8B22B0003081EC /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				53E0D8DB2C06099C00DE1134 /* Medicine.swift */,
+				53E0D8E92C066F7A00DE1134 /* HistoryEntry.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		AEE7ACE62D8B22C0003081EC /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				53E0D8DF2C0609B900DE1134 /* SessionStore.swift */,
+			);
+			path = Managers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -304,6 +347,7 @@
 			files = (
 				53E0D89E2C06084900DE1134 /* Preview Assets.xcassets in Resources */,
 				53E0D89B2C06084900DE1134 /* Assets.xcassets in Resources */,
+				AEE7ACE12D8B20A5003081EC /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -503,7 +547,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"MediStock/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = XGPW6P5YG8;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -532,7 +576,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"MediStock/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = XGPW6P5YG8;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;

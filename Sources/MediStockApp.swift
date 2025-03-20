@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+
 @main
 struct MediStockApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
