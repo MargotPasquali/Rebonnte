@@ -24,8 +24,9 @@ struct MedicineListView: View {
     }
 }
 
-struct MedicineListView_Previews: PreviewProvider {
-    static var previews: some View {
-        MedicineListView(aisle: "Aisle 1").environmentObject(SessionStore())
-    }
+
+#Preview {
+    MedicineListView(aisle: "Aisle 1").environmentObject(SessionStore())
 }
+        
+

@@ -36,6 +36,12 @@
 		53E0D8EA2C066F7A00DE1134 /* HistoryEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8E92C066F7A00DE1134 /* HistoryEntry.swift */; };
 		53E0D8EC2C06717200DE1134 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8EB2C06717200DE1134 /* MainTabView.swift */; };
 		53E0D8EE2C06718100DE1134 /* AllMedicinesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8ED2C06718100DE1134 /* AllMedicinesView.swift */; };
+		AE1F45502D919FFC00348EF0 /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = AE1F454F2D919FFC00348EF0 /* FirebaseAppCheck */; };
+		AE1F45522D91A52200348EF0 /* UserAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE1F45512D91A52200348EF0 /* UserAccountView.swift */; };
+		AE1F45552D91AF0300348EF0 /* MedicineDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE1F45542D91AF0300348EF0 /* MedicineDataService.swift */; };
+		AE7917CD2D8DB740006D332A /* Righteous-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AE7917CC2D8DB740006D332A /* Righteous-Regular.ttf */; };
+		AE7917CF2D8DB76E006D332A /* Nunito-VariableFont_wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AE7917CE2D8DB76E006D332A /* Nunito-VariableFont_wght.ttf */; };
+		AE79182B2D8DB8A3006D332A /* FontView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE79182A2D8DB8A3006D332A /* FontView.swift */; };
 		AEE7ACE12D8B20A5003081EC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = AEE7ACE02D8B20A5003081EC /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
@@ -78,6 +84,12 @@
 		53E0D8E92C066F7A00DE1134 /* HistoryEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryEntry.swift; sourceTree = "<group>"; };
 		53E0D8EB2C06717200DE1134 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		53E0D8ED2C06718100DE1134 /* AllMedicinesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllMedicinesView.swift; sourceTree = "<group>"; };
+		AE1F45512D91A52200348EF0 /* UserAccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAccountView.swift; sourceTree = "<group>"; };
+		AE1F45542D91AF0300348EF0 /* MedicineDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicineDataService.swift; sourceTree = "<group>"; };
+		AE7917CC2D8DB740006D332A /* Righteous-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Righteous-Regular.ttf"; sourceTree = "<group>"; };
+		AE7917CE2D8DB76E006D332A /* Nunito-VariableFont_wght.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nunito-VariableFont_wght.ttf"; sourceTree = "<group>"; };
+		AE7917D02D8DB786006D332A /* MediStock-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "MediStock-Info.plist"; sourceTree = "<group>"; };
+		AE79182A2D8DB8A3006D332A /* FontView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontView.swift; sourceTree = "<group>"; };
 		AEE7ACE02D8B20A5003081EC /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -90,6 +102,7 @@
 				53E0D8C62C06092E00DE1134 /* FirebaseAnalyticsSwift in Frameworks */,
 				53E0D8C22C06092E00DE1134 /* FirebaseAnalytics in Frameworks */,
 				53E0D8D42C06092E00DE1134 /* FirebaseFirestoreCombine-Community in Frameworks */,
+				AE1F45502D919FFC00348EF0 /* FirebaseAppCheck in Frameworks */,
 				53E0D8C42C06092E00DE1134 /* FirebaseAnalyticsOnDeviceConversion in Frameworks */,
 				53E0D8D62C06092E00DE1134 /* FirebaseFirestoreSwift in Frameworks */,
 				53E0D8CC2C06092E00DE1134 /* FirebaseCrashlytics in Frameworks */,
@@ -120,10 +133,12 @@
 		53E0D88A2C06084700DE1134 = {
 			isa = PBXGroup;
 			children = (
+				AE7917D02D8DB786006D332A /* MediStock-Info.plist */,
 				AEE7ACE22D8B2173003081EC /* Resources */,
 				53E0D8952C06084700DE1134 /* Sources */,
 				53E0D8A62C06084900DE1134 /* MediStockTests */,
 				53E0D8B02C06084900DE1134 /* MediStockUITests */,
+				AE1F454E2D919FFC00348EF0 /* Frameworks */,
 				53E0D8942C06084700DE1134 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -141,6 +156,7 @@
 		53E0D8952C06084700DE1134 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
+				AE1F45532D91AEE800348EF0 /* DataService */,
 				53E0D8E12C065FFE00DE1134 /* AppDelegate.swift */,
 				AEE7ACE02D8B20A5003081EC /* GoogleService-Info.plist */,
 				53E0D8962C06084700DE1134 /* MediStockApp.swift */,
@@ -177,9 +193,34 @@
 			path = MediStockUITests;
 			sourceTree = "<group>";
 		};
+		AE1F454E2D919FFC00348EF0 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		AE1F45532D91AEE800348EF0 /* DataService */ = {
+			isa = PBXGroup;
+			children = (
+				AE1F45542D91AF0300348EF0 /* MedicineDataService.swift */,
+			);
+			path = DataService;
+			sourceTree = "<group>";
+		};
+		AE7917CB2D8DB678006D332A /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				AE7917CC2D8DB740006D332A /* Righteous-Regular.ttf */,
+				AE7917CE2D8DB76E006D332A /* Nunito-VariableFont_wght.ttf */,
+			);
+			path = Fonts;
+			sourceTree = "<group>";
+		};
 		AEE7ACE22D8B2173003081EC /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				AE7917CB2D8DB678006D332A /* Fonts */,
 				53E0D89A2C06084900DE1134 /* Assets.xcassets */,
 				53E0D89C2C06084900DE1134 /* Preview Content */,
 			);
@@ -196,6 +237,8 @@
 				53E0D8E72C066F6500DE1134 /* MedicineDetailView.swift */,
 				53E0D8EB2C06717200DE1134 /* MainTabView.swift */,
 				53E0D8ED2C06718100DE1134 /* AllMedicinesView.swift */,
+				AE79182A2D8DB8A3006D332A /* FontView.swift */,
+				AE1F45512D91A52200348EF0 /* UserAccountView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -253,6 +296,7 @@
 				53E0D8D12C06092E00DE1134 /* FirebaseFirestore */,
 				53E0D8D32C06092E00DE1134 /* FirebaseFirestoreCombine-Community */,
 				53E0D8D52C06092E00DE1134 /* FirebaseFirestoreSwift */,
+				AE1F454F2D919FFC00348EF0 /* FirebaseAppCheck */,
 			);
 			productName = MediStock;
 			productReference = 53E0D8932C06084700DE1134 /* MediStock.app */;
@@ -347,6 +391,8 @@
 			files = (
 				53E0D89E2C06084900DE1134 /* Preview Assets.xcassets in Resources */,
 				53E0D89B2C06084900DE1134 /* Assets.xcassets in Resources */,
+				AE7917CD2D8DB740006D332A /* Righteous-Regular.ttf in Resources */,
+				AE7917CF2D8DB76E006D332A /* Nunito-VariableFont_wght.ttf in Resources */,
 				AEE7ACE12D8B20A5003081EC /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -375,14 +421,17 @@
 				53E0D8E22C065FFE00DE1134 /* AppDelegate.swift in Sources */,
 				53E0D8D82C06097900DE1134 /* LoginView.swift in Sources */,
 				53E0D8EA2C066F7A00DE1134 /* HistoryEntry.swift in Sources */,
+				AE1F45522D91A52200348EF0 /* UserAccountView.swift in Sources */,
 				53E0D8E02C0609B900DE1134 /* SessionStore.swift in Sources */,
 				53E0D8DE2C0609A800DE1134 /* MedicineStockViewModel.swift in Sources */,
+				AE79182B2D8DB8A3006D332A /* FontView.swift in Sources */,
 				53E0D8992C06084700DE1134 /* ContentView.swift in Sources */,
 				53E0D8DC2C06099C00DE1134 /* Medicine.swift in Sources */,
 				53E0D8DA2C06098F00DE1134 /* MedicineListView.swift in Sources */,
 				53E0D8E62C066F4100DE1134 /* AisleListView.swift in Sources */,
 				53E0D8972C06084700DE1134 /* MediStockApp.swift in Sources */,
 				53E0D8E82C066F6500DE1134 /* MedicineDetailView.swift in Sources */,
+				AE1F45552D91AF0300348EF0 /* MedicineDataService.swift in Sources */,
 				53E0D8EE2C06718100DE1134 /* AllMedicinesView.swift in Sources */,
 				53E0D8EC2C06717200DE1134 /* MainTabView.swift in Sources */,
 			);
@@ -551,6 +600,7 @@
 				DEVELOPMENT_TEAM = XGPW6P5YG8;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "MediStock-Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -580,6 +630,7 @@
 				DEVELOPMENT_TEAM = XGPW6P5YG8;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "MediStock-Info.plist";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -777,6 +828,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 53E0D8C02C06092E00DE1134 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestoreSwift;
+		};
+		AE1F454F2D919FFC00348EF0 /* FirebaseAppCheck */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 53E0D8C02C06092E00DE1134 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAppCheck;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

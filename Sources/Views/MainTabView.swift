@@ -14,12 +14,16 @@ struct MainTabView: View {
                     Image(systemName: "square.grid.2x2")
                     Text("All Medicines")
                 }
+            
+            UserAccountView()
+                .tabItem {
+                    Image(systemName: "person.fill")
+                    Text("Account")
+                }
         }
     }
 }
 
-struct MainTabView_Previews: PreviewProvider {
-    static var previews: some View {
-        MainTabView()
-    }
+#Preview {
+    MainTabView()
 }
