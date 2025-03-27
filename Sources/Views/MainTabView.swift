@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct MainTabView: View {
+    @State private var darkMode: Bool = false
     var body: some View {
         TabView {
             AisleListView()
@@ -15,7 +16,7 @@ struct MainTabView: View {
                     Text("All Medicines")
                 }
             
-            UserAccountView()
+            UserAccountView(darkMode: $darkMode)
                 .tabItem {
                     Image(systemName: "person.fill")
                     Text("Account")

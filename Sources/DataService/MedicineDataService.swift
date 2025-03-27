@@ -6,117 +6,92 @@
 //
 
 import Foundation
-import Firebase
+import FirebaseFirestore
 
 protocol MedicineDataService {
-    func fetchMedicines()
-    func fetchAisles()
-    func addRandomMedicine(user: String)
-    func deleteMedicines(at offsets: IndexSet)
-    func updateMedicine(_ medicine: Medicine, by amount: Int, user: String)
-    func updateMedicine(_ medicine: Medicine, user: String)
-    func fetchHistory(for medicine: Medicine)
+    func retrieveMedicines() async throws -> [Medicine]
+    func retrieveAisles() async throws -> [String]
+    func createRandomMedicine(user: String) async throws
+    func removeMedicines(medicines: [Medicine]) async throws
+    func adjustMedicineStock(_ medicine: Medicine, by amount: Int, user: String) async throws
+    func modifyMedicine(_ medicine: Medicine, user: String) async throws
+    func retrieveMedicineHistory(for medicine: Medicine) async throws -> [HistoryEntry]
 }
 
 final class RemoteMedicineDataService: MedicineDataService {
-    private var medicines: [Medicine] = []
-    private var aisles: [String] = []
-    private var history: [HistoryEntry] = []
     private let db = Firestore.firestore()
     
-    func fetchMedicines() {
-        db.collection("medicines").addSnapshotListener { (querySnapshot, error) in
-            if let error = error {
-                print("Error getting documents: \(error)")
-            } else {
-                self.medicines = querySnapshot?.documents.compactMap { document in
-                    try? document.data(as: Medicine.self)
-                } ?? []
-            }
+    func retrieveMedicines() async throws -> [Medicine] {
+        let snapshot = try await db.collection("medicines").getDocuments()
+        return snapshot.documents.compactMap { document in
+            try? document.data(as: Medicine.self)
         }
     }
     
-    func fetchAisles() {
-        db.collection("medicines").addSnapshotListener { (querySnapshot, error) in
-            if let error = error {
-                print("Error getting documents: \(error)")
-            } else {
-                let allMedicines = querySnapshot?.documents.compactMap { document in
-                    try? document.data(as: Medicine.self)
-                } ?? []
-                self.aisles = Array(Set(allMedicines.map { $0.aisle })).sorted()
-            }
+    func retrieveAisles() async throws -> [String] {
+        let snapshot = try await db.collection("medicines").getDocuments()
+        let allMedicines = snapshot.documents.compactMap { document in
+            try? document.data(as: Medicine.self)
         }
+        return Array(Set(allMedicines.map { $0.aisle })).sorted()
     }
     
-    func addRandomMedicine(user: String) {
-        let medicine = Medicine(name: "Medicine \(Int.random(in: 1...100))", stock: Int.random(in: 1...100), aisle: "Aisle \(Int.random(in: 1...10))")
-        do {
-            try db.collection("medicines").document(medicine.id ?? UUID().uuidString).setData(from: medicine)
-            addHistory(action: "Added \(medicine.name)", user: user, medicineId: medicine.id ?? "", details: "Added new medicine")
-        } catch let error {
-            print("Error adding document: \(error)")
-        }
+    func createRandomMedicine(user: String) async throws {
+        let medicine = Medicine(name: "Medicine \(Int.random(in: 1...100))",
+                              stock: Int.random(in: 1...100),
+                              aisle: "Aisle \(Int.random(in: 1...10))")
+        try await db.collection("medicines")
+            .document(medicine.id ?? UUID().uuidString)
+            .setData(from: medicine)
+        try await recordHistory(action: "Added \(medicine.name)",
+                              user: user,
+                              medicineId: medicine.id ?? "",
+                              details: "Added new medicine")
     }
     
-    func deleteMedicines(at offsets: IndexSet) {
-        offsets.map { medicines[$0] }.forEach { medicine in
+    func removeMedicines(medicines: [Medicine]) async throws {
+        for medicine in medicines {
             if let id = medicine.id {
-                db.collection("medicines").document(id).delete { error in
-                    if let error = error {
-                        print("Error removing document: \(error)")
-                    }
-                }
+                try await db.collection("medicines").document(id).delete()
             }
         }
     }
     
-    func updateMedicine(_ medicine: Medicine, by amount: Int, user: String) {
+    func adjustMedicineStock(_ medicine: Medicine, by amount: Int, user: String) async throws {
         guard let id = medicine.id else { return }
         let newStock = medicine.stock + amount
-        db.collection("medicines").document(id).updateData([
+        try await db.collection("medicines").document(id).updateData([
             "stock": newStock
-        ]) { error in
-            if let error = error {
-                print("Error updating stock: \(error)")
-            } else {
-                if let index = self.medicines.firstIndex(where: { $0.id == id }) {
-                    self.medicines[index].stock = newStock
-                }
-                self.addHistory(action: "\(amount > 0 ? "Increased" : "Decreased") stock of \(medicine.name) by \(abs(amount))", user: user, medicineId: id, details: "Stock changed from \(medicine.stock) to \(newStock)")
-            }
-        }
+        ])
+        try await recordHistory(action: "\(amount > 0 ? "Increased" : "Decreased") stock of \(medicine.name) by \(abs(amount))",
+                              user: user,
+                              medicineId: id,
+                              details: "Stock changed from \(medicine.stock) to \(newStock)")
     }
     
-    func updateMedicine(_ medicine: Medicine, user: String) {
+    func modifyMedicine(_ medicine: Medicine, user: String) async throws {
         guard let id = medicine.id else { return }
-        do {
-            try db.collection("medicines").document(id).setData(from: medicine)
-            addHistory(action: "Updated \(medicine.name)", user: user, medicineId: id, details: "Updated medicine details")
-        } catch let error {
-            print("Error updating document: \(error)")
+        try await db.collection("medicines").document(id).setData(from: medicine)
+        try await recordHistory(action: "Updated \(medicine.name)",
+                              user: user,
+                              medicineId: id,
+                              details: "Updated medicine details")
+    }
+    
+    func retrieveMedicineHistory(for medicine: Medicine) async throws -> [HistoryEntry] {
+        guard let medicineId = medicine.id else { return [] }
+        let snapshot = try await db.collection("history")
+            .whereField("medicineId", isEqualTo: medicineId)
+            .getDocuments()
+        return snapshot.documents.compactMap { document in
+            try? document.data(as: HistoryEntry.self)
         }
     }
     
-    private func addHistory(action: String, user: String, medicineId: String, details: String) {
+    private func recordHistory(action: String, user: String, medicineId: String, details: String) async throws {
         let history = HistoryEntry(medicineId: medicineId, user: user, action: action, details: details)
-        do {
-            try db.collection("history").document(history.id ?? UUID().uuidString).setData(from: history)
-        } catch let error {
-            print("Error adding history: \(error)")
-        }
-    }
-    
-    func fetchHistory(for medicine: Medicine) {
-        guard let medicineId = medicine.id else { return }
-        db.collection("history").whereField("medicineId", isEqualTo: medicineId).addSnapshotListener { (querySnapshot, error) in
-            if let error = error {
-                print("Error getting history: \(error)")
-            } else {
-                self.history = querySnapshot?.documents.compactMap { document in
-                    try? document.data(as: HistoryEntry.self)
-                } ?? []
-            }
-        }
+        try await db.collection("history")
+            .document(history.id ?? UUID().uuidString)
+            .setData(from: history)
     }
 }

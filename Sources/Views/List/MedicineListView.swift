@@ -19,14 +19,13 @@ struct MedicineListView: View {
         }
         .navigationBarTitle(aisle)
         .onAppear {
-            viewModel.fetchMedicines()
+            Task {
+                await viewModel.fetchMedicines()
+            }
         }
     }
 }
 
-
 #Preview {
     MedicineListView(aisle: "Aisle 1").environmentObject(SessionStore())
 }
-        
-

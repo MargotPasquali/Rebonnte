@@ -21,7 +21,7 @@ struct LoginView: View {
                 TextField("", text: $email, prompt: Text("Entrez votre email").foregroundColor(.gray))
                     .padding()
                     .background(Color("Text Color"))
-                    .foregroundStyle(Color("Text Color"))
+                    .foregroundStyle(Color.background)
                     .font(Font.custom("Nunito-Regular", size: 16))
                     .cornerRadius(8)
                     .autocapitalization(.none)
@@ -31,12 +31,13 @@ struct LoginView: View {
                     .foregroundStyle(Color("Text Color"))
                     .font(Font.custom("Nunito-SemiBold", size: 20))
                     .frame(maxWidth: .infinity, alignment: .leading)
+
                 
                 SecureField("", text: $password, prompt: Text("Entrez votre mot de passe").foregroundColor(.gray))
                     .font(Font.custom("Nunito-Regular", size: 16))
                     .padding()
                     .background(Color("Text Color"))
-                    .foregroundStyle(Color("Text Color"))
+                    .foregroundStyle(Color.background)
                     .cornerRadius(8)
                 Button(action: {
                     session.signIn(email: email, password: password)

@@ -1,57 +1,113 @@
 import Foundation
 import Firebase
+import FirebaseFirestore
 
+@MainActor
 class SessionStore: ObservableObject {
     @Published var session: User?
+    @Published var email: String = ""
+    @Published var fullName: String = ""
+    @Published var profileImageURL: String = ""
+    
     var handle: AuthStateDidChangeListenerHandle?
-
+    private let db = Firestore.firestore()
+    
+    init() {
+        listen()
+    }
+    
     func listen() {
-        handle = Auth.auth().addStateDidChangeListener { (auth, user) in
+        handle = Auth.auth().addStateDidChangeListener { [weak self] (auth, user) in
+            guard let self = self else { return }
             if let user = user {
-                self.session = User(uid: user.uid, email: user.email)
+                self.session = User(id: user.uid, email: user.email ?? "", fullName: "", profileImageURL: "")
+                Task {
+                    await self.fetchUserData(userId: user.uid)
+                }
             } else {
                 self.session = nil
+                self.email = ""
+                self.fullName = ""
+                self.profileImageURL = ""
             }
         }
     }
-
+    
     func signUp(email: String, password: String) {
-        Auth.auth().createUser(withEmail: email, password: password) { (result, error) in
+        Auth.auth().createUser(withEmail: email, password: password) { [weak self] (result, error) in
+            guard let self = self else { return }
             if let error = error {
                 print("Error creating user: \(error.localizedDescription) \(error)")
-            } else {
-                self.session = User(uid: result?.user.uid ?? "", email: result?.user.email ?? "")
+            } else if let user = result?.user {
+                self.session = User(id: user.uid, email: user.email ?? "", fullName: "", profileImageURL: "")
+                let userData: [String: Any] = [
+                    "id": user.uid,
+                    "email": user.email ?? "",
+                    "full_name": "New User",
+                    "profile_image_url": ""
+                ]
+                self.db.collection("users").document(user.uid).setData(userData) { error in
+                    if let error = error {
+                        print("Error writing user to Firestore: \(error)")
+                    } else {
+                        Task {
+                            await self.fetchUserData(userId: user.uid)
+                        }
+                    }
+                }
             }
         }
     }
-
+    
     func signIn(email: String, password: String) {
-        Auth.auth().signIn(withEmail: email, password: password) { (result, error) in
+        Auth.auth().signIn(withEmail: email, password: password) { [weak self] (result, error) in
+            guard let self = self else { return }
             if let error = error {
                 print("Error signing in: \(error.localizedDescription)")
-            } else {
-                self.session = User(uid: result?.user.uid ?? "", email: result?.user.email ?? "")
+            } else if let user = result?.user {
+                self.session = User(id: user.uid, email: user.email ?? "", fullName: "", profileImageURL: "")
+                Task {
+                    await self.fetchUserData(userId: user.uid)
+                }
             }
         }
     }
-
+    
     func signOut() {
         do {
             try Auth.auth().signOut()
             self.session = nil
+            self.email = ""
+            self.fullName = ""
+            self.profileImageURL = ""
         } catch let error {
             print("Error signing out: \(error.localizedDescription)")
         }
     }
-
+    
     func unbind() {
         if let handle = handle {
             Auth.auth().removeStateDidChangeListener(handle)
         }
     }
-}
-
-struct User {
-    var uid: String
-    var email: String?
+    
+    func fetchUserData(userId: String) async {
+        print("Fetching data for userId: \(userId)")
+        do {
+            let document = try await db.collection("users").document(userId).getDocument()
+            if document.exists, let data = document.data() {
+                print("Firestore raw data: \(data)")
+                let user = try document.data(as: User.self)
+                print("Successfully decoded user: id=\(user.id), email=\(user.email), fullName=\(user.fullName), profileImageURL=\(user.profileImageURL)")
+                self.session = user
+                self.email = user.email
+                self.fullName = user.fullName
+                self.profileImageURL = user.profileImageURL
+            } else {
+                print("User document does not exist")
+            }
+        } catch {
+            print("Error fetching or decoding user data: \(error.localizedDescription)")
+        }
+    }
 }
