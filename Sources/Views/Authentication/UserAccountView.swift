@@ -9,10 +9,8 @@ import SwiftUI
 import Kingfisher
 
 struct UserAccountView: View {
-    
     @EnvironmentObject var session: SessionStore
-    @Binding var darkMode: Bool
-    
+
     var body: some View {
         ZStack {
             Color("Background Color")
@@ -34,23 +32,30 @@ struct UserAccountView: View {
                     Image(systemName: "person.crop.circle.fill")
                         .resizable()
                         .frame(width: 150, height: 150)
-                        .foregroundColor(Color.gray)
+                        .foregroundColor(Color.text)
                 }
                 Text(session.fullName)
                     .font(Font.custom("Righteous", size: 25))
-                    .foregroundStyle(Color("Text Color"))
+                    .foregroundStyle(Color.text)
                 Text(session.email)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding()
-                    .background(Color.action)
+                    .background(Color.text)
                     .cornerRadius(4)
-                    .foregroundStyle(Color.white)
+                    .foregroundStyle(Color.background)
                     .font(Font.custom("Nunito-Regular", size: 16))
-                Toggle("Dark Mode", isOn: $darkMode)
-                    .tint(Color.action)
-                    .foregroundStyle(Color.text)
-                    .font(Font.custom("Nunito-Regular", size: 16))
-                
+                Toggle("Dark Mode", isOn: Binding(
+                    get: { session.darkMode },
+                    set: { newValue in
+                        Task {
+                            await session.updateDarkMode(newValue)
+                        }
+                    }
+                ))
+                .tint(Color.action)
+                .foregroundStyle(Color.text)
+                .font(Font.custom("Nunito-Regular", size: 16))
+
                 Button(action: {
                     session.signOut()
                 }) {
@@ -64,28 +69,25 @@ struct UserAccountView: View {
                 .border(Color.text, width: 2)
                 .cornerRadius(8)
                 .padding(.top, 20)
-
-            }.padding()
+                Spacer()
+            }
+            .padding()
         }
+        .preferredColorScheme(session.darkMode ? .dark : .light)
     }
 }
 
 #Preview {
-    // Créer un SessionStore avec un utilisateur fictif
     let sessionStore = SessionStore().withFakeUser()
-    
-    // Utiliser @State pour darkMode dans la preview
-    @State var previewDarkMode = false
-    
-    return UserAccountView(darkMode: $previewDarkMode)
+    return UserAccountView()
         .environmentObject(sessionStore)
 }
 
-// Extension pour simplifier la création d'un SessionStore avec un utilisateur fictif
 extension SessionStore {
     func withFakeUser() -> SessionStore {
         self.fullName = "Jean Dupont"
         self.profileImageURL = "https://www.photomaintenant.fr/_next/static/media/photo-professionnelle-ia-femme-fond-ville-costume-noir-01.7c88541c.webp"
+        self.darkMode = false
         return self
     }
 }

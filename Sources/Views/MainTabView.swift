@@ -1,30 +1,46 @@
 import SwiftUI
 
 struct MainTabView: View {
-    @State private var darkMode: Bool = false
-    var body: some View {
-        TabView {
-            AisleListView()
-                .tabItem {
-                    Image(systemName: "list.dash")
-                    Text("Aisles")
-                }
+    @EnvironmentObject var session: SessionStore
+    @StateObject private var aisleViewModel = AisleListViewModel()
 
-            AllMedicinesView()
-                .tabItem {
-                    Image(systemName: "square.grid.2x2")
-                    Text("All Medicines")
-                }
-            
-            UserAccountView(darkMode: $darkMode)
-                .tabItem {
-                    Image(systemName: "person.fill")
-                    Text("Account")
-                }
+    init() {
+        UITabBar.appearance().unselectedItemTintColor = UIColor.text
+        UITabBarItem.appearance().setTitleTextAttributes(
+            [.font: UIFont(name: "Nuni-Regular", size: 12) ?? UIFont.systemFont(ofSize: 12)],
+            for: .normal
+        )
+    }
+
+    var body: some View {
+        ZStack {
+            Color.background
+                .ignoresSafeArea()
+            TabView {
+                AisleListView(viewModel: aisleViewModel)
+                    .tabItem {
+                        Image(systemName: "list.dash")
+                            .foregroundStyle(Color.text)
+                        Text("Aisles")
+                    }
+                AllMedicinesView()
+                    .tabItem {
+                        Image(systemName: "square.grid.2x2")
+                        Text("All Medicines")
+                    }
+                UserAccountView()
+                    .tabItem {
+                        Image(systemName: "person.fill")
+                        Text("Account")
+                    }
+            }
+            .accentColor(.action)
         }
+        .preferredColorScheme(session.darkMode ? .dark : .light)
     }
 }
 
 #Preview {
     MainTabView()
+        .environmentObject(SessionStore().withFakeUser())
 }

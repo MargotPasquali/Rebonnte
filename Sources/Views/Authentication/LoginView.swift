@@ -17,7 +17,7 @@ struct LoginView: View {
                     .font(Font.custom("Nunito-SemiBold", size: 20))
                     .foregroundStyle(Color("Text Color"))
                     .frame(maxWidth: .infinity, alignment: .leading)
-                
+
                 TextField("", text: $email, prompt: Text("Entrez votre email").foregroundColor(.gray))
                     .padding()
                     .background(Color("Text Color"))
@@ -26,13 +26,12 @@ struct LoginView: View {
                     .cornerRadius(8)
                     .autocapitalization(.none)
                     .keyboardType(.emailAddress)
-                
+
                 Text("Password")
                     .foregroundStyle(Color("Text Color"))
                     .font(Font.custom("Nunito-SemiBold", size: 20))
                     .frame(maxWidth: .infinity, alignment: .leading)
 
-                
                 SecureField("", text: $password, prompt: Text("Entrez votre mot de passe").foregroundColor(.gray))
                     .font(Font.custom("Nunito-Regular", size: 16))
                     .padding()
@@ -58,14 +57,12 @@ struct LoginView: View {
                         .font(Font.custom("Nunito-ExtraBold", size: 18))
                         .foregroundStyle(Color("Text Color"))
 
-
                 }
             }
             .padding()
         }
     }
 }
-
 
 #Preview {
     LoginView().environmentObject(SessionStore())

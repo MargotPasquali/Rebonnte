@@ -1,26 +1,35 @@
 import SwiftUI
 
 struct MedicineListView: View {
-    @ObservedObject var viewModel = MedicineStockViewModel()
+    @ObservedObject var viewModel = MedicineListViewModel()
     var aisle: String
 
     var body: some View {
-        List {
-            ForEach(viewModel.medicines.filter { $0.aisle == aisle }, id: \.id) { medicine in
-                NavigationLink(destination: MedicineDetailView(medicine: medicine)) {
-                    VStack(alignment: .leading) {
-                        Text(medicine.name)
-                            .font(.headline)
-                        Text("Stock: \(medicine.stock)")
-                            .font(.subheadline)
+        ZStack {
+            Color.background
+                .ignoresSafeArea()
+            ScrollView {
+                VStack {
+                    ForEach(viewModel.medicines.filter { $0.aisle == aisle }, id: \.id) { medicine in
+                        NavigationLink(destination: MedicineDetailView(medicine: medicine)) {
+                            MedicineListRowView(medicine: medicine)
+                        }
                     }
                 }
+                .padding(.horizontal)
             }
-        }
-        .navigationBarTitle(aisle)
-        .onAppear {
-            Task {
-                await viewModel.fetchMedicines()
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text(aisle)
+                        .font(.custom("Nunito-Bold", size: 18))
+                        .foregroundStyle(Color.text)
+                }
+            }
+            .onAppear {
+                Task {
+                    await viewModel.fetchMedicines()
+                }
             }
         }
     }

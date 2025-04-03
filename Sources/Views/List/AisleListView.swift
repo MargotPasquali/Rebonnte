@@ -1,25 +1,46 @@
 import SwiftUI
 
 struct AisleListView: View {
-    @ObservedObject var viewModel = MedicineStockViewModel()
+    @ObservedObject var viewModel: AisleListViewModel
+    @State private var showAddNewMedicineView = false
 
     var body: some View {
         NavigationView {
-            List {
-                ForEach(viewModel.aisles, id: \.self) { aisle in
-                    NavigationLink(destination: MedicineListView(aisle: aisle)) {
-                        Text(aisle)
+            ZStack {
+                Color.background
+                    .ignoresSafeArea()
+                if viewModel.isLoading {
+                    CustomLoadingView()
+                } else if viewModel.aisles.isEmpty {
+                    Text("Aucun rayon disponible")
+                        .font(.custom("Nunito-Medium", size: 16))
+                        .foregroundStyle(Color.text)
+                } else {
+                    VStack {
+                        Text("Aisles")
+                            .font(.custom("Righteous", size: 30))
+                            .foregroundStyle(Color.text)
+                        ForEach(viewModel.aisles, id: \.self) { aisle in
+                            NavigationLink(destination: MedicineListView(aisle: aisle)) {
+                                AisleRowView(aisle: aisle)
+                            }
+                        }
+                        Spacer()
                     }
                 }
             }
-            .navigationBarTitle("Aisles")
             .navigationBarItems(trailing: Button(action: {
-                Task {
-                    await viewModel.addRandomMedicine(user: "test_user") // Remplacez par l'utilisateur actuel
-                }
+                showAddNewMedicineView = true
             }) {
                 Image(systemName: "plus.circle.fill")
+                    .resizable()
+                    .frame(width: 30, height: 30)
+                    .foregroundStyle(Color.action)
             })
+            .sheet(isPresented: $showAddNewMedicineView) {
+                AddNewMedicineView(viewModel: AddNewMedicineViewModel())
+                    .environmentObject(SessionStore())
+            }
         }
         .onAppear {
             Task {
@@ -28,7 +49,6 @@ struct AisleListView: View {
         }
     }
 }
-
 #Preview {
-    AisleListView()
+    AisleListView(viewModel: AisleListViewModel())
 }

@@ -2,143 +2,217 @@ import SwiftUI
 
 struct MedicineDetailView: View {
     @State var medicine: Medicine
-    @ObservedObject var viewModel = MedicineStockViewModel()
+    @ObservedObject var viewModel = MedicineDetailViewModel()
     @EnvironmentObject var session: SessionStore
+    @Environment(\.dismiss) private var dismiss
+    @State private var showDeleteConfirmation = false
+    @State private var showErrorAlert = false
+    private let lowStockThreshold = 40
+
+    private var stockStatusColor: Color {
+        medicine.stock <= lowStockThreshold ? .alert : .success
+    }
+    private var stockBinding: Binding<Double> {
+        Binding<Double>(
+            get: { Double(medicine.stock) },
+            set: { medicine.stock = Int($0) }
+        )
+    }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                // Title
-                Text(medicine.name)
-                    .font(.largeTitle)
-                    .padding(.top, 20)
-
-                // Medicine Name
-                medicineNameSection
-
-                // Medicine Stock
-                medicineStockSection
-
-                // Medicine Aisle
-                medicineAisleSection
-
-                // History Section
-                historySection
+        ZStack {
+            Color.background
+                .ignoresSafeArea()
+            ScrollView {
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack {
+                        Spacer()
+                        VStack {
+                            Image(systemName: "pills.circle.fill")
+                                .resizable()
+                                .frame(width: 150, height: 150)
+                                .symbolRenderingMode(.palette)
+                                .foregroundStyle(stockStatusColor.opacity(medicine.stock <= lowStockThreshold ? 1.0 : 0.5), .text)
+                            // Title
+                            TextField("Name", text: $medicine.name, onCommit: {
+                                Task {
+                                    await viewModel.modifyMedicine(medicine, user: session.session?.id ?? "")
+                                }
+                            })
+                            .font(.custom("Righteous", size: 30))
+                            .foregroundStyle(Color.text)
+                            .multilineTextAlignment(.center)
+                            .frame(maxWidth: 300)
+                            .padding(.bottom, 10)
+                        }
+                        Spacer()
+                    }
+                    
+                    // Medicine Stock
+                    medicineStockSection
+                    
+                    // Medicine Aisle
+                    medicineAisleSection
+                    
+                    // History Section
+                    historySection
+                }
+                .padding()
             }
-            .padding(.vertical)
-        }
-        .navigationBarTitle("Medicine Details", displayMode: .inline)
-        .onAppear {
-            Task {
-                await viewModel.fetchHistory(for: medicine)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                // Titre centré
+                ToolbarItem(placement: .principal) {
+                    Text("Medicine Details")
+                        .font(.custom("Nunito-Bold", size: 18))
+                        .foregroundStyle(Color.text)
+                }
+                // Bouton "Modifier" à gauche
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        Task {
+                            await viewModel.modifyMedicine(medicine, user: session.session?.id ?? "")
+                        }
+                    }) {
+                        Image(systemName: "checkmark.square.fill")
+                            .resizable()
+                            .frame(width: 25, height: 25)
+                            .symbolRenderingMode(.palette)
+                            .foregroundStyle(.success, .text)
+                    }
+                }
+                // Bouton "Supprimer" à droite
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: {
+                        showDeleteConfirmation = true
+                    }) {
+                        Image(systemName: "trash")
+                            .foregroundStyle(Color.alert)
+                    }
+                }
             }
-        }
-        .onChange(of: medicine) { _ in
-            Task {
-                await viewModel.modifyMedicine(medicine, user: session.session?.id ?? "")
+            .alert("Delete Medicine", isPresented: $showDeleteConfirmation) {
+                Button("Cancel", role: .cancel) { }
+                Button("Delete", role: .destructive) {
+                    Task {
+                        // Vérifier si l'ID du médicament est présent
+                        guard medicine.id != nil else {
+                            viewModel.errorMessage = "Cannot delete medicine: Invalid ID."
+                            showErrorAlert = true
+                            return
+                        }
+                        // Trouver l'index du médicament dans viewModel.medicines
+                        if let index = viewModel.medicines.firstIndex(where: { $0.id == medicine.id }) {
+                            await viewModel.deleteMedicines(at: IndexSet(integer: index))
+                            if viewModel.errorMessage == nil {
+                                dismiss() // Ferme la vue si la suppression réussit
+                            } else {
+                                showErrorAlert = true // Affiche l'erreur si la suppression échoue
+                            }
+                        } else {
+                            viewModel.errorMessage = "Medicine not found in the list."
+                            showErrorAlert = true
+                        }
+                    }
+                }
+            } message: {
+                Text("Are you sure you want to delete \(medicine.name)? This action cannot be undone.")
+            }
+            .alert("Error", isPresented: $showErrorAlert) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text(viewModel.errorMessage ?? "An unknown error occurred.")
+            }
+            .onAppear {
+                Task {
+                    await viewModel.fetchMedicines()
+                    await viewModel.fetchHistory(for: medicine)
+                }
+            }
+            .onChange(of: medicine) { _ in
+                Task {
+                    await viewModel.modifyMedicine(medicine, user: session.session?.id ?? "")
+                }
             }
         }
     }
 }
 
 extension MedicineDetailView {
-    private var medicineNameSection: some View {
-        VStack(alignment: .leading) {
-            Text("Name")
-                .font(.headline)
-            TextField("Name", text: $medicine.name, onCommit: {
-                Task {
-                    await viewModel.modifyMedicine(medicine, user: session.session?.id ?? "")
-                }
-            })
-            .textFieldStyle(RoundedBorderTextFieldStyle())
-            .padding(.bottom, 10)
-        }
-        .padding(.horizontal)
-    }
-
     private var medicineStockSection: some View {
-        VStack(alignment: .leading) {
+        HStack {
             Text("Stock")
-                .font(.headline)
-            HStack {
-                Button(action: {
-                    Task {
-                        await viewModel.decreaseStock(medicine, user: session.session?.id ?? "")
-                    }
-                }) {
-                    Image(systemName: "minus.circle")
-                        .font(.title)
-                        .foregroundColor(.red)
-                }
-                TextField("Stock", value: $medicine.stock, formatter: NumberFormatter(), onCommit: {
-                    Task {
-                        await viewModel.modifyMedicine(medicine, user: session.session?.id ?? "")
-                    }
-                })
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .keyboardType(.numberPad)
-                .frame(width: 100)
-                Button(action: {
-                    Task {
-                        await viewModel.increaseStock(medicine, user: session.session?.id ?? "")
-                    }
-                }) {
-                    Image(systemName: "plus.circle")
-                        .font(.title)
-                        .foregroundColor(.green)
-                }
+                .font(.custom("Nunito-Bold", size: 18))
+                .foregroundStyle(Color.background)
+                .padding(.trailing)
+            Slider(value: stockBinding, in: 0...100, step: 5) {
+                Text("Stock: \(medicine.stock, specifier: "%.0f")")
             }
-            .padding(.bottom, 10)
+            .tint(medicine.stock < 50 ? .alert : .success)
+            Text("\(medicine.stock)")
+                .font(.custom("Nunito-Bold", size: 16))
+                .foregroundStyle(Color.background)
+                .frame(maxWidth: .infinity, alignment: .center)
         }
-        .padding(.horizontal)
+        .padding()
+        .background(Color.text)
+        .cornerRadius(4)
     }
 
     private var medicineAisleSection: some View {
-        VStack(alignment: .leading) {
+        HStack {
             Text("Aisle")
-                .font(.headline)
-            TextField("Aisle", text: $medicine.aisle, onCommit: {
-                Task {
-                    await viewModel.modifyMedicine(medicine, user: session.session?.id ?? "")
-                }
-            })
-            .textFieldStyle(RoundedBorderTextFieldStyle())
-            .padding(.bottom, 10)
+                .font(.custom("Nunito-Bold", size: 18))
+                .foregroundStyle(Color.background)
+                .padding(.trailing)
+            TextField("", text: $medicine.aisle, prompt: Text("0").foregroundColor(.gray))
+                .font(.custom("Nunito-Bold", size: 18))
+                .foregroundStyle(Color.background)
+                .multilineTextAlignment(.leading)
         }
-        .padding(.horizontal)
+        .padding()
+        .background(Color.text)
+        .cornerRadius(4)
     }
 
     private var historySection: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 10) {
             Text("History")
-                .font(.headline)
-                .padding(.top, 20)
+                .font(.custom("Nunito-Bold", size: 18))
+                .foregroundStyle(Color.background)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            
             ForEach(viewModel.history.filter { $0.medicineId == medicine.id }, id: \.id) { entry in
                 VStack(alignment: .leading, spacing: 5) {
                     Text(entry.action)
-                        .font(.headline)
+                        .font(.custom("Nunito-SemiBold", size: 16))
+                        .foregroundStyle(Color.background)
                     Text("User: \(entry.user)")
-                        .font(.subheadline)
+                        .font(.custom("Nunito-Regular", size: 16))
+                        .foregroundStyle(Color.background)
                     Text("Date: \(entry.timestamp.formatted())")
-                        .font(.subheadline)
+                        .font(.custom("Nunito-Light", size: 16))
+                        .foregroundStyle(Color.background)
                     Text("Details: \(entry.details)")
-                        .font(.subheadline)
+                        .font(.custom("Nunito-ExtraLight", size: 16))
+                        .foregroundStyle(Color.background)
                 }
                 .padding()
-                .background(Color(.systemGray6))
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color.white.opacity(0.1))
                 .cornerRadius(10)
-                .padding(.bottom, 5)
             }
         }
-        .padding(.horizontal)
+        .padding()
+        .frame(maxWidth: .infinity)
+        .background(Color.text)
+        .cornerRadius(4)
     }
 }
 
-
 #Preview {
-    let sampleMedicine = Medicine(name: "Sample", stock: 10, aisle: "Aisle 1")
-    let sampleViewModel = MedicineStockViewModel()
+    let sampleMedicine = Medicine(name: "Aspirin", stock: 100, aisle: "1")
+    let sampleViewModel = MedicineDetailViewModel()
     MedicineDetailView(medicine: sampleMedicine, viewModel: sampleViewModel)
         .environmentObject(SessionStore())
 }

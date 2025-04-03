@@ -28,11 +28,11 @@ struct MedicineRowView: View {
                     .foregroundStyle(stockStatusColor)
                     .opacity(medicine.stock <= lowStockThreshold ? 1.0 : 0.3)
                 Text(medicine.name)
-                    .font(.system(size: 16, weight: .medium))
+                    .font(Font.custom("Nunito-SemiBold", size: 16))
                     .foregroundStyle(Color.background)
                 
                 Text("Stock: \(medicine.stock)")
-                    .font(.system(size: 14))
+                    .font(Font.custom("Nunito-Medium", size: 14))
                     .foregroundStyle(Color.background)
             }
         }
@@ -43,3 +43,5 @@ struct MedicineRowView: View {
     let sampleMedicine = Medicine(name: "Aspirin", stock: 5, aisle: "A1")
     return MedicineRowView(medicine: sampleMedicine)
 }
+
+
