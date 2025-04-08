@@ -34,11 +34,7 @@ struct MedicineDetailView: View {
                                 .symbolRenderingMode(.palette)
                                 .foregroundStyle(stockStatusColor.opacity(medicine.stock <= lowStockThreshold ? 1.0 : 0.5), .text)
                             // Title
-                            TextField("Name", text: $medicine.name, onCommit: {
-                                Task {
-                                    await viewModel.modifyMedicine(medicine, user: session.session?.id ?? "")
-                                }
-                            })
+                            TextField("Name", text: $medicine.name)
                             .font(.custom("Righteous", size: 30))
                             .foregroundStyle(Color.text)
                             .multilineTextAlignment(.center)
@@ -47,15 +43,25 @@ struct MedicineDetailView: View {
                         }
                         Spacer()
                     }
-                    
+
                     // Medicine Stock
                     medicineStockSection
-                    
+
                     // Medicine Aisle
                     medicineAisleSection
-                    
+
                     // History Section
-                    historySection
+                    if viewModel.history.isEmpty {
+                            Text("No history available")
+                                .font(.custom("Nunito-Medium", size: 18))
+                                .foregroundStyle(Color.background)
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                        .background(Color.text)
+                        .cornerRadius(4)
+                    } else {
+                        historySection
+                    }
                 }
                 .padding()
             }
@@ -72,6 +78,7 @@ struct MedicineDetailView: View {
                     Button(action: {
                         Task {
                             await viewModel.modifyMedicine(medicine, user: session.session?.id ?? "")
+                            dismiss()
                         }
                     }) {
                         Image(systemName: "checkmark.square.fill")
@@ -105,9 +112,9 @@ struct MedicineDetailView: View {
                         if let index = viewModel.medicines.firstIndex(where: { $0.id == medicine.id }) {
                             await viewModel.deleteMedicines(at: IndexSet(integer: index))
                             if viewModel.errorMessage == nil {
-                                dismiss() // Ferme la vue si la suppression réussit
+                                dismiss()
                             } else {
-                                showErrorAlert = true // Affiche l'erreur si la suppression échoue
+                                showErrorAlert = true
                             }
                         } else {
                             viewModel.errorMessage = "Medicine not found in the list."
@@ -127,11 +134,6 @@ struct MedicineDetailView: View {
                 Task {
                     await viewModel.fetchMedicines()
                     await viewModel.fetchHistory(for: medicine)
-                }
-            }
-            .onChange(of: medicine) { _ in
-                Task {
-                    await viewModel.modifyMedicine(medicine, user: session.session?.id ?? "")
                 }
             }
         }
@@ -176,39 +178,39 @@ extension MedicineDetailView {
     }
 
     private var historySection: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("History")
-                .font(.custom("Nunito-Bold", size: 18))
-                .foregroundStyle(Color.background)
-                .frame(maxWidth: .infinity, alignment: .leading)
-            
-            ForEach(viewModel.history.filter { $0.medicineId == medicine.id }, id: \.id) { entry in
-                VStack(alignment: .leading, spacing: 5) {
-                    Text(entry.action)
-                        .font(.custom("Nunito-SemiBold", size: 16))
-                        .foregroundStyle(Color.background)
-                    Text("User: \(entry.user)")
-                        .font(.custom("Nunito-Regular", size: 16))
-                        .foregroundStyle(Color.background)
-                    Text("Date: \(entry.timestamp.formatted())")
-                        .font(.custom("Nunito-Light", size: 16))
-                        .foregroundStyle(Color.background)
-                    Text("Details: \(entry.details)")
-                        .font(.custom("Nunito-ExtraLight", size: 16))
-                        .foregroundStyle(Color.background)
+            VStack(alignment: .leading, spacing: 10) {
+                Text("History")
+                    .font(.custom("Nunito-Bold", size: 18))
+                    .foregroundStyle(Color.background)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                
+                ForEach(viewModel.history.filter { $0.medicineId == medicine.id }, id: \.id) { entry in
+                    VStack(alignment: .leading, spacing: 5) {
+                        Text(entry.action)
+                            .font(.custom("Nunito-SemiBold", size: 16))
+                            .foregroundStyle(Color.background)
+                        Text("User: \(entry.user)")
+                            .font(.custom("Nunito-Regular", size: 16))
+                            .foregroundStyle(Color.background)
+                        Text("Date: \(entry.timestamp.formatted())")
+                            .font(.custom("Nunito-Light", size: 16))
+                            .foregroundStyle(Color.background)
+                        Text("Details: \(entry.details)")
+                            .font(.custom("Nunito-ExtraLight", size: 16))
+                            .foregroundStyle(Color.background)
+                    }
+                    .padding()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(Color.gray.opacity(0.1))
+                    .cornerRadius(10)
                 }
-                .padding()
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.white.opacity(0.1))
-                .cornerRadius(10)
             }
+            .padding()
+            .frame(maxWidth: .infinity)
+            .background(Color.text)
+            .cornerRadius(4)
         }
-        .padding()
-        .frame(maxWidth: .infinity)
-        .background(Color.text)
-        .cornerRadius(4)
     }
-}
 
 #Preview {
     let sampleMedicine = Medicine(name: "Aspirin", stock: 100, aisle: "1")

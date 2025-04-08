@@ -4,9 +4,7 @@ import FirebaseFirestore
 protocol MedicineDataService {
     func retrieveMedicines() async throws -> [Medicine]
     func retrieveAisles() async throws -> [String]
-    func createRandomMedicine(user: String) async throws
     func removeMedicines(medicines: [Medicine]) async throws
-    func adjustMedicineStock(_ medicine: Medicine, by amount: Int, user: String) async throws
     func modifyMedicine(_ medicine: Medicine, user: String) async throws
     func retrieveMedicineHistory(for medicine: Medicine) async throws -> [HistoryEntry]
     func addMedicine(medicine: Medicine) async throws
@@ -33,37 +31,12 @@ final class RemoteMedicineDataService: MedicineDataService {
         return aisles
     }
 
-    func createRandomMedicine(user: String) async throws {
-        let medicine = Medicine(name: "Medicine \(Int.random(in: 1...100))",
-                              stock: Int.random(in: 1...100),
-                              aisle: "Aisle \(Int.random(in: 1...10))")
-        try await data.collection("medicines")
-            .document(medicine.id ?? UUID().uuidString)
-            .setData(from: medicine)
-        try await recordHistory(action: "Added \(medicine.name)",
-                              user: user,
-                              medicineId: medicine.id ?? "",
-                              details: "Added new medicine")
-    }
-
     func removeMedicines(medicines: [Medicine]) async throws {
         for medicine in medicines {
             if let id = medicine.id {
                 try await data.collection("medicines").document(id).delete()
             }
         }
-    }
-
-    func adjustMedicineStock(_ medicine: Medicine, by amount: Int, user: String) async throws {
-        guard let id = medicine.id else { return }
-        let newStock = medicine.stock + amount
-        try await data.collection("medicines").document(id).updateData([
-            "stock": newStock
-        ])
-        try await recordHistory(action: "\(amount > 0 ? "Increased" : "Decreased") stock of \(medicine.name) by \(abs(amount))",
-                              user: user,
-                              medicineId: id,
-                              details: "Stock changed from \(medicine.stock) to \(newStock)")
     }
 
     func modifyMedicine(_ medicine: Medicine, user: String) async throws {

@@ -8,19 +8,19 @@ import SwiftUI
 
 struct MedicineRowView: View {
     let medicine: Medicine
-    
+
     private let lowStockThreshold = 40
-    
+
     private var stockStatusColor: Color {
         medicine.stock <= lowStockThreshold ? .alert : .success
     }
-    
+
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 4)
                 .fill(Color.text)
                 .frame(width: 120, height: 120)
-            
+
             VStack(spacing: 8) {
                 Image(systemName: "pills.fill")
                     .resizable()
@@ -30,7 +30,7 @@ struct MedicineRowView: View {
                 Text(medicine.name)
                     .font(Font.custom("Nunito-SemiBold", size: 16))
                     .foregroundStyle(Color.background)
-                
+
                 Text("Stock: \(medicine.stock)")
                     .font(Font.custom("Nunito-Medium", size: 14))
                     .foregroundStyle(Color.background)
@@ -43,5 +43,3 @@ struct MedicineRowView: View {
     let sampleMedicine = Medicine(name: "Aspirin", stock: 5, aisle: "A1")
     return MedicineRowView(medicine: sampleMedicine)
 }
-
-

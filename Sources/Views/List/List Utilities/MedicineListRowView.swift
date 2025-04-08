@@ -1,10 +1,3 @@
-//
-//  MedicineListRowView.swift
-//  MediStock
-//
-//  Created by Margot Pasquali on 31/03/2025.
-//
-
 import SwiftUI
 
 struct MedicineListRowView: View {
@@ -19,7 +12,8 @@ struct MedicineListRowView: View {
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 4)
-                .frame(maxWidth: .infinity, maxHeight: 80)
+                .frame(maxWidth: .infinity)
+                .frame(height: 60)
                 .foregroundStyle(Color.text)
             HStack {
                 Image(systemName: "pills.fill")
@@ -28,18 +22,17 @@ struct MedicineListRowView: View {
                     .foregroundStyle(stockStatusColor)
                     .opacity(medicine.stock <= lowStockThreshold ? 1.0 : 0.3)
                     .padding(.trailing, 15.0)
-                VStack {
+                VStack(alignment: .leading) {
                     Text(medicine.name)
                         .font(Font.custom("Nunito-SemiBold", size: 18))
                         .foregroundStyle(Color.background)
                     Text("Stock: \(medicine.stock)")
                         .font(Font.custom("Nunito-Medium", size: 14))
                         .foregroundStyle(Color.background)
-
                 }
                 Spacer()
-
-            }.padding(.leading, 15.0)
+            }
+            .padding(.leading, 15.0)
         }
     }
 }

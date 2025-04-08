@@ -37,18 +37,22 @@ struct AisleListView: View {
                     .frame(width: 30, height: 30)
                     .foregroundStyle(Color.action)
             })
-            .sheet(isPresented: $showAddNewMedicineView) {
+            .sheet(isPresented: $showAddNewMedicineView, onDismiss: {
+                // Rafraîchir les allées après la fermeture de la feuille
+                Task {
+                    await viewModel.fetchAisles()
+                }
+            }) {
                 AddNewMedicineView(viewModel: AddNewMedicineViewModel())
                     .environmentObject(SessionStore())
             }
         }
-        .onAppear {
-            Task {
-                await viewModel.fetchAisles()
-            }
+        .task {
+            await viewModel.fetchAisles()
         }
     }
 }
+
 #Preview {
     AisleListView(viewModel: AisleListViewModel())
 }

@@ -45,6 +45,7 @@
 		AE3C10F82D9C2872001FAAB5 /* MedicineListRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE3C10F72D9C2872001FAAB5 /* MedicineListRowView.swift */; };
 		AE3C10FA2D9C2892001FAAB5 /* AisleRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE3C10F92D9C2892001FAAB5 /* AisleRowView.swift */; };
 		AE3C11552D9C3F9A001FAAB5 /* CustomLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE3C11542D9C3F9A001FAAB5 /* CustomLoadingView.swift */; };
+		AE3E66042DA42C8D00DA5026 /* CustomSearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE3E66032DA42C8D00DA5026 /* CustomSearchBar.swift */; };
 		AE7917CD2D8DB740006D332A /* Righteous-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AE7917CC2D8DB740006D332A /* Righteous-Regular.ttf */; };
 		AE7917CF2D8DB76E006D332A /* Nunito-VariableFont_wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AE7917CE2D8DB76E006D332A /* Nunito-VariableFont_wght.ttf */; };
 		AE9A7D052D9D6E16007F66D6 /* MedicineDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9A7D042D9D6E16007F66D6 /* MedicineDetailViewModel.swift */; };
@@ -100,6 +101,7 @@
 		AE3C10F72D9C2872001FAAB5 /* MedicineListRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicineListRowView.swift; sourceTree = "<group>"; };
 		AE3C10F92D9C2892001FAAB5 /* AisleRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AisleRowView.swift; sourceTree = "<group>"; };
 		AE3C11542D9C3F9A001FAAB5 /* CustomLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomLoadingView.swift; sourceTree = "<group>"; };
+		AE3E66032DA42C8D00DA5026 /* CustomSearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSearchBar.swift; sourceTree = "<group>"; };
 		AE7917CC2D8DB740006D332A /* Righteous-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Righteous-Regular.ttf"; sourceTree = "<group>"; };
 		AE7917CE2D8DB76E006D332A /* Nunito-VariableFont_wght.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nunito-VariableFont_wght.ttf"; sourceTree = "<group>"; };
 		AE7917D02D8DB786006D332A /* MediStock-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "MediStock-Info.plist"; sourceTree = "<group>"; };
@@ -237,7 +239,7 @@
 		AE1F45B62D93017700348EF0 /* List */ = {
 			isa = PBXGroup;
 			children = (
-				AE1F46132D9458F300348EF0 /* Utilities */,
+				AE1F46132D9458F300348EF0 /* List Utilities */,
 				53E0D8D92C06098F00DE1134 /* MedicineListView.swift */,
 				53E0D8ED2C06718100DE1134 /* AllMedicinesView.swift */,
 				53E0D8E52C066F4100DE1134 /* AisleListView.swift */,
@@ -246,12 +248,21 @@
 			path = List;
 			sourceTree = "<group>";
 		};
-		AE1F46132D9458F300348EF0 /* Utilities */ = {
+		AE1F46132D9458F300348EF0 /* List Utilities */ = {
 			isa = PBXGroup;
 			children = (
 				AE1F46142D94590E00348EF0 /* MedicineRowView.swift */,
 				AE3C10F72D9C2872001FAAB5 /* MedicineListRowView.swift */,
 				AE3C10F92D9C2892001FAAB5 /* AisleRowView.swift */,
+			);
+			path = "List Utilities";
+			sourceTree = "<group>";
+		};
+		AE3E66022DA42C6D00DA5026 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				AE3C11542D9C3F9A001FAAB5 /* CustomLoadingView.swift */,
+				AE3E66032DA42C8D00DA5026 /* CustomSearchBar.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -278,11 +289,11 @@
 		AEE7ACE32D8B21BC003081EC /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				AE3E66022DA42C6D00DA5026 /* Utilities */,
 				AE1F45B62D93017700348EF0 /* List */,
 				AE1F45B32D93010B00348EF0 /* Authentication */,
 				53E0D8982C06084700DE1134 /* ContentView.swift */,
 				53E0D8EB2C06717200DE1134 /* MainTabView.swift */,
-				AE3C11542D9C3F9A001FAAB5 /* CustomLoadingView.swift */,
 				AE9A7D082D9D7096007F66D6 /* AddNewMedicineView.swift */,
 			);
 			path = Views;
@@ -479,6 +490,7 @@
 				53E0D8E02C0609B900DE1134 /* SessionStore.swift in Sources */,
 				53E0D8DE2C0609A800DE1134 /* MedicineListViewModel.swift in Sources */,
 				AE1F45B22D93006B00348EF0 /* SortOption.swift in Sources */,
+				AE3E66042DA42C8D00DA5026 /* CustomSearchBar.swift in Sources */,
 				AE1F45B02D92FFE400348EF0 /* User.swift in Sources */,
 				53E0D8992C06084700DE1134 /* ContentView.swift in Sources */,
 				53E0D8DC2C06099C00DE1134 /* Medicine.swift in Sources */,
@@ -672,6 +684,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -702,6 +715,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

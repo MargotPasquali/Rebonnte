@@ -2,8 +2,6 @@ import SwiftUI
 
 struct AllMedicinesView: View {
     @ObservedObject var viewModel = MedicineListViewModel()
-    @State private var filterText: String = ""
-    @State private var sortOption: SortOption = .none
     @State private var showAddNewMedicineView = false
 
     private let columns = [
@@ -26,14 +24,11 @@ struct AllMedicinesView: View {
 
                     // Filtrage et Tri
                     HStack {
-                        TextField("Filter by name", text: $filterText)
-                            .textFieldStyle(RoundedBorderTextFieldStyle())
-                            .padding(.leading, 10)
-                            .font(Font.custom("Nunito-Medium", size: 16))
+                        CustomSearchBar(viewModel: viewModel)
 
                         Spacer()
 
-                        Picker("Sort by", selection: $sortOption) {
+                        Picker("Sort by", selection: $viewModel.sortOption) {
                             Text("None").tag(SortOption.none)
                             Text("Name").tag(SortOption.name)
                             Text("Stock").tag(SortOption.stock)
@@ -46,7 +41,7 @@ struct AllMedicinesView: View {
                     // Liste des Médicaments
                     ScrollView {
                         LazyVGrid(columns: columns, spacing: 16) {
-                            ForEach(filteredAndSortedMedicines, id: \.id) { medicine in
+                            ForEach(viewModel.filteredMedicines, id: \.id) { medicine in
                                 NavigationLink(destination: MedicineDetailView(medicine: medicine, viewModel: MedicineDetailViewModel())) {
                                     MedicineRowView(medicine: medicine)
                                 }
@@ -75,27 +70,6 @@ struct AllMedicinesView: View {
                 }
             }
         }
-    }
-
-    var filteredAndSortedMedicines: [Medicine] {
-        var medicines = viewModel.medicines
-
-        // Filtrage
-        if !filterText.isEmpty {
-            medicines = medicines.filter { $0.name.lowercased().contains(filterText.lowercased()) }
-        }
-
-        // Tri
-        switch sortOption {
-        case .name:
-            medicines.sort { $0.name.lowercased() < $1.name.lowercased() }
-        case .stock:
-            medicines.sort { $0.stock < $1.stock }
-        case .none:
-            break
-        }
-
-        return medicines
     }
 }
 
