@@ -5,11 +5,17 @@ final class MedicineListViewModel: ObservableObject {
 
     enum MedicineListViewModelError: Error {
         case failedToFetchMedicines
+        case failedToFetchMedicineByName
+        case failedToFetchMedicineByStock
 
         var localizedDescription: String {
             switch self {
             case .failedToFetchMedicines:
                 return "Failed to fetch medicines"
+            case .failedToFetchMedicineByName:
+                return "Failed to fetch medicine by name"
+            case .failedToFetchMedicineByStock:
+                return "Failed to fetch medicine by stock"
             }
         }
     }
@@ -30,16 +36,6 @@ final class MedicineListViewModel: ObservableObject {
                     return medicine.name.lowercased().contains(search)
                 }
             }
-
-            switch sortOption {
-            case .name:
-                filtered.sort { $0.name.lowercased() < $1.name.lowercased() }
-            case .stock:
-                filtered.sort { $0.stock < $1.stock }
-            case .none:
-                break
-            }
-
             return filtered
         }
 
@@ -60,5 +56,32 @@ final class MedicineListViewModel: ObservableObject {
 
         isLoading = false
     }
+    
+    func fetchMedicinesSortedByName() async {
+            isLoading = true
+            errorMessage = nil
 
+            do {
+                let sortedMedicines = try await medicineDataService.retrieveMedicinesSortedByName()
+                self.medicines = sortedMedicines
+            } catch {
+                errorMessage = MedicineListViewModelError.failedToFetchMedicineByName.localizedDescription
+            }
+
+            isLoading = false
+        }
+
+    func fetchMedicinesSortedByStock() async {
+            isLoading = true
+            errorMessage = nil
+
+            do {
+                let sortedMedicines = try await medicineDataService.retrieveMedicinesSortedByStock()
+                self.medicines = sortedMedicines
+            } catch {
+                errorMessage = MedicineListViewModelError.failedToFetchMedicineByStock.localizedDescription
+            }
+
+            isLoading = false
+        }
 }

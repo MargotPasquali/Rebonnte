@@ -69,6 +69,17 @@ struct AllMedicinesView: View {
                     await viewModel.fetchMedicines()
                 }
             }
+            .onChange(of: viewModel.sortOption) { newSortOption in
+                            Task {
+                                if newSortOption == .name {
+                                    await viewModel.fetchMedicinesSortedByName()
+                                } else if newSortOption == .stock {
+                                    await viewModel.fetchMedicinesSortedByStock()
+                                } else {
+                                    await viewModel.fetchMedicines()
+                                }
+                            }
+                        }
         }
     }
 }

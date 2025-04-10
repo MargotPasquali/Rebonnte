@@ -38,7 +38,6 @@ struct AisleListView: View {
                     .foregroundStyle(Color.action)
             })
             .sheet(isPresented: $showAddNewMedicineView, onDismiss: {
-                // Rafraîchir les allées après la fermeture de la feuille
                 Task {
                     await viewModel.fetchAisles()
                 }

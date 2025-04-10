@@ -3,6 +3,8 @@ import FirebaseFirestore
 
 protocol MedicineDataService {
     func retrieveMedicines() async throws -> [Medicine]
+    func retrieveMedicinesSortedByName() async throws -> [Medicine]
+    func retrieveMedicinesSortedByStock() async throws -> [Medicine]
     func retrieveAisles() async throws -> [String]
     func removeMedicines(medicines: [Medicine]) async throws
     func modifyMedicine(_ medicine: Medicine, user: String, changes: [MedecineChangeRequest]) async throws
@@ -15,6 +17,24 @@ final class RemoteMedicineDataService: MedicineDataService {
 
     func retrieveMedicines() async throws -> [Medicine] {
         let snapshot = try await data.collection("medicines").getDocuments()
+        return snapshot.documents.compactMap { document in
+            try? document.data(as: Medicine.self)
+        }
+    }
+
+    func retrieveMedicinesSortedByName() async throws -> [Medicine] {
+        let snapshot = try await data.collection("medicines")
+            .order(by: "name")
+            .getDocuments()
+        return snapshot.documents.compactMap { document in
+            try? document.data(as: Medicine.self)
+        }
+    }
+
+    func retrieveMedicinesSortedByStock() async throws -> [Medicine] {
+        let snapshot = try await data.collection("medicines")
+            .order(by: "stock", descending: false)
+            .getDocuments()
         return snapshot.documents.compactMap { document in
             try? document.data(as: Medicine.self)
         }
