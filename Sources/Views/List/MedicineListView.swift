@@ -11,7 +11,7 @@ struct MedicineListView: View {
             ScrollView {
                 VStack {
                     ForEach(viewModel.medicines.filter { $0.aisle == aisle }, id: \.id) { medicine in
-                        NavigationLink(destination: MedicineDetailView(medicine: medicine)) {
+                        NavigationLink(destination: MedicineDetailView(medicine: medicine, viewModel: MedicineDetailViewModel())) {
                             MedicineListRowView(medicine: medicine)
                         }
                     }

@@ -52,6 +52,7 @@
 		AE9A7D072D9D6E5D007F66D6 /* AisleListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9A7D062D9D6E5D007F66D6 /* AisleListViewModel.swift */; };
 		AE9A7D092D9D7096007F66D6 /* AddNewMedicineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9A7D082D9D7096007F66D6 /* AddNewMedicineView.swift */; };
 		AE9A7D642D9D70C3007F66D6 /* AddNewMedicineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9A7D632D9D70C3007F66D6 /* AddNewMedicineViewModel.swift */; };
+		AE9EFE842DA6AD8200AF76CD /* MedecineChangeRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9EFE832DA6AD8200AF76CD /* MedecineChangeRequest.swift */; };
 		AEE7ACE12D8B20A5003081EC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = AEE7ACE02D8B20A5003081EC /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
@@ -109,6 +110,7 @@
 		AE9A7D062D9D6E5D007F66D6 /* AisleListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AisleListViewModel.swift; sourceTree = "<group>"; };
 		AE9A7D082D9D7096007F66D6 /* AddNewMedicineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNewMedicineView.swift; sourceTree = "<group>"; };
 		AE9A7D632D9D70C3007F66D6 /* AddNewMedicineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNewMedicineViewModel.swift; sourceTree = "<group>"; };
+		AE9EFE832DA6AD8200AF76CD /* MedecineChangeRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedecineChangeRequest.swift; sourceTree = "<group>"; };
 		AEE7ACE02D8B20A5003081EC /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -317,6 +319,7 @@
 				53E0D8DB2C06099C00DE1134 /* Medicine.swift */,
 				53E0D8E92C066F7A00DE1134 /* HistoryEntry.swift */,
 				AE1F45AF2D92FFE400348EF0 /* User.swift */,
+				AE9EFE832DA6AD8200AF76CD /* MedecineChangeRequest.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -506,6 +509,7 @@
 				AE3C11552D9C3F9A001FAAB5 /* CustomLoadingView.swift in Sources */,
 				AE9A7D092D9D7096007F66D6 /* AddNewMedicineView.swift in Sources */,
 				AE9A7D642D9D70C3007F66D6 /* AddNewMedicineViewModel.swift in Sources */,
+				AE9EFE842DA6AD8200AF76CD /* MedecineChangeRequest.swift in Sources */,
 				53E0D8EC2C06717200DE1134 /* MainTabView.swift in Sources */,
 				AE9A7D072D9D6E5D007F66D6 /* AisleListViewModel.swift in Sources */,
 			);

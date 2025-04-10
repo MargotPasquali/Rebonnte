@@ -44,18 +44,6 @@ struct UserAccountView: View {
                     .cornerRadius(4)
                     .foregroundStyle(Color.background)
                     .font(Font.custom("Nunito-Regular", size: 16))
-                Toggle("Dark Mode", isOn: Binding(
-                    get: { session.darkMode },
-                    set: { newValue in
-                        Task {
-                            await session.updateDarkMode(newValue)
-                        }
-                    }
-                ))
-                .tint(Color.action)
-                .foregroundStyle(Color.text)
-                .font(Font.custom("Nunito-Regular", size: 16))
-
                 Button(action: {
                     session.signOut()
                 }) {
@@ -73,7 +61,6 @@ struct UserAccountView: View {
             }
             .padding()
         }
-        .preferredColorScheme(session.darkMode ? .dark : .light)
     }
 }
 
@@ -87,7 +74,6 @@ extension SessionStore {
     func withFakeUser() -> SessionStore {
         self.fullName = "Jean Dupont"
         self.profileImageURL = "https://www.photomaintenant.fr/_next/static/media/photo-professionnelle-ia-femme-fond-ville-costume-noir-01.7c88541c.webp"
-        self.darkMode = false
         return self
     }
 }

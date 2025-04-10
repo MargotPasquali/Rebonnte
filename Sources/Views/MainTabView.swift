@@ -36,7 +36,6 @@ struct MainTabView: View {
             }
             .accentColor(.action)
         }
-        .preferredColorScheme(session.darkMode ? .dark : .light)
     }
 }
 

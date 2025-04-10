@@ -2,12 +2,19 @@ import SwiftUI
 
 struct MedicineDetailView: View {
     @State var medicine: Medicine
+    @State private var initialMedicine: Medicine
     @ObservedObject var viewModel = MedicineDetailViewModel()
     @EnvironmentObject var session: SessionStore
     @Environment(\.dismiss) private var dismiss
     @State private var showDeleteConfirmation = false
     @State private var showErrorAlert = false
     private let lowStockThreshold = 40
+
+    init(medicine: Medicine, viewModel: MedicineDetailViewModel) {
+        self._medicine = State(initialValue: medicine)
+        self._initialMedicine = State(initialValue: medicine)
+        self.viewModel = viewModel
+    }
 
     private var stockStatusColor: Color {
         medicine.stock <= lowStockThreshold ? .alert : .success
@@ -35,11 +42,12 @@ struct MedicineDetailView: View {
                                 .foregroundStyle(stockStatusColor.opacity(medicine.stock <= lowStockThreshold ? 1.0 : 0.5), .text)
                             // Title
                             TextField("Name", text: $medicine.name)
-                            .font(.custom("Righteous", size: 30))
-                            .foregroundStyle(Color.text)
-                            .multilineTextAlignment(.center)
-                            .frame(maxWidth: 300)
-                            .padding(.bottom, 10)
+                                .font(.custom("Righteous", size: 30))
+                                .foregroundStyle(Color.text)
+                                .multilineTextAlignment(.center)
+                                .frame(maxWidth: 300)
+                                .padding(.bottom, 10)
+                                .autocorrectionDisabled(true)
                         }
                         Spacer()
                     }
@@ -52,13 +60,13 @@ struct MedicineDetailView: View {
 
                     // History Section
                     if viewModel.history.isEmpty {
-                            Text("No history available")
-                                .font(.custom("Nunito-Medium", size: 18))
-                                .foregroundStyle(Color.background)
-                                .padding()
-                                .frame(maxWidth: .infinity)
-                        .background(Color.text)
-                        .cornerRadius(4)
+                        Text("No history available")
+                            .font(.custom("Nunito-Medium", size: 18))
+                            .foregroundStyle(Color.background)
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(Color.text)
+                            .cornerRadius(4)
                     } else {
                         historySection
                     }
@@ -77,7 +85,18 @@ struct MedicineDetailView: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
                         Task {
-                            await viewModel.modifyMedicine(medicine, user: session.session?.id ?? "")
+                            var changes: [MedecineChangeRequest] = []
+                            if medicine.name != initialMedicine.name {
+                                changes.append(.nameChanged)
+                            }
+                            if medicine.stock != initialMedicine.stock {
+                                changes.append(.stockChanged)
+                            }
+                            if medicine.aisle != initialMedicine.aisle {
+                                changes.append(.aisleChanged)
+                            }
+
+                            await viewModel.modifyMedicine(medicine, user: "user_id", changes: changes)
                             dismiss()
                         }
                     }) {
@@ -102,13 +121,12 @@ struct MedicineDetailView: View {
                 Button("Cancel", role: .cancel) { }
                 Button("Delete", role: .destructive) {
                     Task {
-                        // Vérifier si l'ID du médicament est présent
                         guard medicine.id != nil else {
                             viewModel.errorMessage = "Cannot delete medicine: Invalid ID."
                             showErrorAlert = true
                             return
                         }
-                        // Trouver l'index du médicament dans viewModel.medicines
+
                         if let index = viewModel.medicines.firstIndex(where: { $0.id == medicine.id }) {
                             await viewModel.deleteMedicines(at: IndexSet(integer: index))
                             if viewModel.errorMessage == nil {
@@ -178,39 +196,39 @@ extension MedicineDetailView {
     }
 
     private var historySection: some View {
-            VStack(alignment: .leading, spacing: 10) {
-                Text("History")
-                    .font(.custom("Nunito-Bold", size: 18))
-                    .foregroundStyle(Color.background)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                
-                ForEach(viewModel.history.filter { $0.medicineId == medicine.id }, id: \.id) { entry in
-                    VStack(alignment: .leading, spacing: 5) {
-                        Text(entry.action)
-                            .font(.custom("Nunito-SemiBold", size: 16))
-                            .foregroundStyle(Color.background)
-                        Text("User: \(entry.user)")
-                            .font(.custom("Nunito-Regular", size: 16))
-                            .foregroundStyle(Color.background)
-                        Text("Date: \(entry.timestamp.formatted())")
-                            .font(.custom("Nunito-Light", size: 16))
-                            .foregroundStyle(Color.background)
-                        Text("Details: \(entry.details)")
-                            .font(.custom("Nunito-ExtraLight", size: 16))
-                            .foregroundStyle(Color.background)
-                    }
-                    .padding()
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color.gray.opacity(0.1))
-                    .cornerRadius(10)
+        VStack(alignment: .leading, spacing: 10) {
+            Text("History")
+                .font(.custom("Nunito-Bold", size: 18))
+                .foregroundStyle(Color.background)
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            ForEach(viewModel.history.filter { $0.medicineId == medicine.id }, id: \.id) { entry in
+                VStack(alignment: .leading, spacing: 5) {
+                    Text(entry.action)
+                        .font(.custom("Nunito-SemiBold", size: 16))
+                        .foregroundStyle(Color.background)
+                    Text("User: \(entry.fullName)")
+                        .font(.custom("Nunito-Regular", size: 16))
+                        .foregroundStyle(Color.background)
+                    Text("Date: \(entry.timestamp.formatted())")
+                        .font(.custom("Nunito-Light", size: 16))
+                        .foregroundStyle(Color.background)
+                    Text("Details: \(entry.details)")
+                        .font(.custom("Nunito-ExtraLight", size: 16))
+                        .foregroundStyle(Color.background)
                 }
+                .padding()
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(10)
             }
-            .padding()
-            .frame(maxWidth: .infinity)
-            .background(Color.text)
-            .cornerRadius(4)
         }
+        .padding()
+        .frame(maxWidth: .infinity)
+        .background(Color.text)
+        .cornerRadius(4)
     }
+}
 
 #Preview {
     let sampleMedicine = Medicine(name: "Aspirin", stock: 100, aisle: "1")

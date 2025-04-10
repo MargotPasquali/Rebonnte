@@ -8,7 +8,6 @@ class SessionStore: ObservableObject {
     @Published var email: String = ""
     @Published var fullName: String = ""
     @Published var profileImageURL: String = ""
-    @Published var darkMode: Bool = false
 
     var handle: AuthStateDidChangeListenerHandle?
     private let data = Firestore.firestore()
@@ -21,7 +20,7 @@ class SessionStore: ObservableObject {
         handle = Auth.auth().addStateDidChangeListener { [weak self] (auth, user) in
             guard let self = self else { return }
             if let user = user {
-                self.session = User(id: user.uid, email: user.email ?? "", fullName: "", profileImageURL: "", darkMode: nil)
+                self.session = User(id: user.uid, email: user.email ?? "", fullName: "", profileImageURL: "")
                 Task {
                     await self.fetchUserData(userId: user.uid)
                 }
@@ -30,7 +29,6 @@ class SessionStore: ObservableObject {
                 self.email = ""
                 self.fullName = ""
                 self.profileImageURL = ""
-                self.darkMode = false
             }
         }
     }
@@ -41,13 +39,12 @@ class SessionStore: ObservableObject {
             if let error = error {
                 print("Error creating user: \(error.localizedDescription) \(error)")
             } else if let user = result?.user {
-                self.session = User(id: user.uid, email: user.email ?? "", fullName: "", profileImageURL: "", darkMode: false)
+                self.session = User(id: user.uid, email: user.email ?? "", fullName: "", profileImageURL: "")
                 let userData: [String: Any] = [
                     "id": user.uid,
                     "email": user.email ?? "",
                     "full_name": "New User",
-                    "profile_image_url": "",
-                    "darkMode": false
+                    "profile_image_url": ""
                 ]
                 self.data.collection("users").document(user.uid).setData(userData) { error in
                     if let error = error {
@@ -68,7 +65,7 @@ class SessionStore: ObservableObject {
             if let error = error {
                 print("Error signing in: \(error.localizedDescription)")
             } else if let user = result?.user {
-                self.session = User(id: user.uid, email: user.email ?? "", fullName: "", profileImageURL: "", darkMode: nil)
+                self.session = User(id: user.uid, email: user.email ?? "", fullName: "", profileImageURL: "")
                 Task {
                     await self.fetchUserData(userId: user.uid)
                 }
@@ -83,7 +80,6 @@ class SessionStore: ObservableObject {
             self.email = ""
             self.fullName = ""
             self.profileImageURL = ""
-            self.darkMode = false
         } catch let error {
             print("Error signing out: \(error.localizedDescription)")
         }
@@ -107,7 +103,6 @@ class SessionStore: ObservableObject {
                 self.email = user.email
                 self.fullName = user.fullName
                 self.profileImageURL = user.profileImageURL
-                self.darkMode = data["darkMode"] as? Bool ?? false
             } else {
                 print("User document does not exist")
             }
@@ -115,17 +110,5 @@ class SessionStore: ObservableObject {
             print("Error fetching or decoding user data: \(error.localizedDescription)")
         }
         print("Finished fetchUserData at \(Date())")
-    }
-
-    func updateDarkMode(_ darkMode: Bool) async {
-        guard let userId = session?.id else { return }
-        self.darkMode = darkMode
-        do {
-            try await data.collection("users").document(userId).updateData([
-                "darkMode": darkMode
-            ])
-        } catch {
-            print("Error updating dark mode preference: \(error.localizedDescription)")
-        }
     }
 }

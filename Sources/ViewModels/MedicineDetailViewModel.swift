@@ -65,14 +65,13 @@ final class MedicineDetailViewModel: ObservableObject {
         }
     }
 
-    func modifyMedicine(_ medicine: Medicine, user: String) async {
-        do {
-            try await medicineDataService.modifyMedicine(medicine, user: user)
-            await fetchMedicines()
-        } catch {
-            errorMessage = MedicineDetailViewModelError.failedToModifyMedicine.localizedDescription
+    func modifyMedicine(_ medicine: Medicine, user: String, changes: [MedecineChangeRequest]) async {
+            do {
+                try await medicineDataService.modifyMedicine(medicine, user: user, changes: changes)
+            } catch {
+                print("Erreur lors de la modification : \(error)")
+            }
         }
-    }
 
     func fetchHistory(for medicine: Medicine) async {
         do {
