@@ -44,6 +44,35 @@ struct UserAccountView: View {
                     .cornerRadius(4)
                     .foregroundStyle(Color.background)
                     .font(Font.custom("Nunito-Regular", size: 16))
+
+                ZStack {
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(Color.text)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 100)
+                    VStack {
+                        Text("Choose your appearance preference:")
+                            .font(.custom("Nunito-Regular", size: 16))
+                            .foregroundStyle(Color.background)
+                            .multilineTextAlignment(.leading)
+                        Picker("Apparence", selection: $session.appearancePreference) {
+                            ForEach(AppearancePreference.allCases, id: \.self) { preference in
+                                Text(preference.rawValue)
+                                    .font(.custom("Nunito-Bold", size: 16))
+                                    .foregroundStyle(Color.text)
+                                    .padding(8)
+                                    .tag(preference)
+                            }
+                        }
+                        .pickerStyle(SegmentedPickerStyle())
+                        .background(
+                            RoundedRectangle(cornerRadius: 8)
+                                .fill(Color.background.opacity(0.5))
+
+                        )
+                        .padding(.horizontal)
+                    }
+                }
                 Button(action: {
                     session.signOut()
                 }) {

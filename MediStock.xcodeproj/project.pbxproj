@@ -42,6 +42,7 @@
 		AE1F45B22D93006B00348EF0 /* SortOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE1F45B12D93006200348EF0 /* SortOption.swift */; };
 		AE1F46122D9305FF00348EF0 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = AE1F46112D9305FF00348EF0 /* Kingfisher */; };
 		AE1F46152D94590E00348EF0 /* MedicineRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE1F46142D94590E00348EF0 /* MedicineRowView.swift */; };
+		AE3224DE2DA7FCA000C46DFD /* AppearancePreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE3224DD2DA7FCA000C46DFD /* AppearancePreference.swift */; };
 		AE3C10F82D9C2872001FAAB5 /* MedicineListRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE3C10F72D9C2872001FAAB5 /* MedicineListRowView.swift */; };
 		AE3C10FA2D9C2892001FAAB5 /* AisleRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE3C10F92D9C2892001FAAB5 /* AisleRowView.swift */; };
 		AE3C11552D9C3F9A001FAAB5 /* CustomLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE3C11542D9C3F9A001FAAB5 /* CustomLoadingView.swift */; };
@@ -99,6 +100,7 @@
 		AE1F45AF2D92FFE400348EF0 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		AE1F45B12D93006200348EF0 /* SortOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortOption.swift; sourceTree = "<group>"; };
 		AE1F46142D94590E00348EF0 /* MedicineRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicineRowView.swift; sourceTree = "<group>"; };
+		AE3224DD2DA7FCA000C46DFD /* AppearancePreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearancePreference.swift; sourceTree = "<group>"; };
 		AE3C10F72D9C2872001FAAB5 /* MedicineListRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicineListRowView.swift; sourceTree = "<group>"; };
 		AE3C10F92D9C2892001FAAB5 /* AisleRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AisleRowView.swift; sourceTree = "<group>"; };
 		AE3C11542D9C3F9A001FAAB5 /* CustomLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomLoadingView.swift; sourceTree = "<group>"; };
@@ -320,6 +322,7 @@
 				53E0D8E92C066F7A00DE1134 /* HistoryEntry.swift */,
 				AE1F45AF2D92FFE400348EF0 /* User.swift */,
 				AE9EFE832DA6AD8200AF76CD /* MedecineChangeRequest.swift */,
+				AE3224DD2DA7FCA000C46DFD /* AppearancePreference.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -505,6 +508,7 @@
 				53E0D8E82C066F6500DE1134 /* MedicineDetailView.swift in Sources */,
 				AE3C10FA2D9C2892001FAAB5 /* AisleRowView.swift in Sources */,
 				AE1F45552D91AF0300348EF0 /* MedicineDataService.swift in Sources */,
+				AE3224DE2DA7FCA000C46DFD /* AppearancePreference.swift in Sources */,
 				53E0D8EE2C06718100DE1134 /* AllMedicinesView.swift in Sources */,
 				AE3C11552D9C3F9A001FAAB5 /* CustomLoadingView.swift in Sources */,
 				AE9A7D092D9D7096007F66D6 /* AddNewMedicineView.swift in Sources */,

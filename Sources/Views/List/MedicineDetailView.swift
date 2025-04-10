@@ -96,7 +96,7 @@ struct MedicineDetailView: View {
                                 changes.append(.aisleChanged)
                             }
 
-                            await viewModel.modifyMedicine(medicine, user: "user_id", changes: changes)
+                            await viewModel.modifyMedicine(medicine, user: session.session?.id ?? "", changes: changes)
                             dismiss()
                         }
                     }) {

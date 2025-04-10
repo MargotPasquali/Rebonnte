@@ -9,12 +9,25 @@ class SessionStore: ObservableObject {
     @Published var fullName: String = ""
     @Published var profileImageURL: String = ""
 
+    @Published var appearancePreference: AppearancePreference {
+            didSet {
+                print("Préférence changée en : \(appearancePreference)")
+                UserDefaults.standard.set(appearancePreference.rawValue, forKey: "appearancePreference")
+            }
+        }
+
     var handle: AuthStateDidChangeListenerHandle?
     private let data = Firestore.firestore()
 
     init() {
-        listen()
-    }
+            if let savedPreference = UserDefaults.standard.string(forKey: "appearancePreference"),
+               let preference = AppearancePreference(rawValue: savedPreference) {
+                appearancePreference = preference
+            } else {
+                appearancePreference = .system
+            }
+            listen()
+        }
 
     func listen() {
         handle = Auth.auth().addStateDidChangeListener { [weak self] (auth, user) in

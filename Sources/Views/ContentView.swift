@@ -11,6 +11,10 @@ struct ContentView: View {
                 LoginView()
             }
         }
+        .preferredColorScheme(
+            session.appearancePreference == .system ? nil :
+            (session.appearancePreference == .dark ? .dark : .light)
+        )
         .onAppear {
             session.listen()
         }
