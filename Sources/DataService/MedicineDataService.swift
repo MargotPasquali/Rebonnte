@@ -1,10 +1,12 @@
 import Foundation
 import FirebaseFirestore
 
+// MARK: - Protocol
 protocol MedicineDataService {
     func retrieveMedicines() async throws -> [Medicine]
     func retrieveMedicinesSortedByName() async throws -> [Medicine]
     func retrieveMedicinesSortedByStock() async throws -> [Medicine]
+    func checkForDuplicate(name: String) async throws -> Bool
     func retrieveAisles() async throws -> [String]
     func removeMedicines(medicines: [Medicine]) async throws
     func modifyMedicine(_ medicine: Medicine, user: String, changes: [MedecineChangeRequest]) async throws
@@ -13,8 +15,10 @@ protocol MedicineDataService {
 }
 
 final class RemoteMedicineDataService: MedicineDataService {
+    // MARK: - Constants
     private let data = Firestore.firestore()
 
+    // MARK: - Functions
     func retrieveMedicines() async throws -> [Medicine] {
         let snapshot = try await data.collection("medicines").getDocuments()
         return snapshot.documents.compactMap { document in
@@ -39,6 +43,13 @@ final class RemoteMedicineDataService: MedicineDataService {
             try? document.data(as: Medicine.self)
         }
     }
+
+    func checkForDuplicate(name: String) async throws -> Bool {
+            let snapshot = try await data.collection("medicines")
+                .whereField("name", isEqualTo: name)
+                .getDocuments()
+            return !snapshot.documents.isEmpty
+        }
 
     func retrieveAisles() async throws -> [String] {
         print("Starting retrieveAisles at \(Date())")

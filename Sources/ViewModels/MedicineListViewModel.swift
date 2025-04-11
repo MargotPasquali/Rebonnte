@@ -3,6 +3,7 @@ import Foundation
 @MainActor
 final class MedicineListViewModel: ObservableObject {
 
+    // MARK: - Error Enum
     enum MedicineListViewModelError: Error {
         case failedToFetchMedicines
         case failedToFetchMedicineByName
@@ -20,8 +21,10 @@ final class MedicineListViewModel: ObservableObject {
         }
     }
 
+    // MARK: - Constants
     private let medicineDataService: MedicineDataService
 
+    // MARK: - Properties
     @Published var medicines: [Medicine] = []
     @Published var searchText: String = ""
     @Published var isLoading: Bool = false
@@ -39,10 +42,12 @@ final class MedicineListViewModel: ObservableObject {
             return filtered
         }
 
+    // MARK: - Init
     init(medicineDataService: MedicineDataService = RemoteMedicineDataService()) {
         self.medicineDataService = medicineDataService
     }
 
+    // MARK: - Functions
     func fetchMedicines() async {
         isLoading = true
         errorMessage = nil
@@ -56,7 +61,7 @@ final class MedicineListViewModel: ObservableObject {
 
         isLoading = false
     }
-    
+
     func fetchMedicinesSortedByName() async {
             isLoading = true
             errorMessage = nil

@@ -2,6 +2,7 @@ import Foundation
 import FirebaseFirestoreSwift
 
 struct HistoryEntry: Identifiable, Codable {
+    // MARK: - Properties
     @DocumentID var id: String?
     var medicineId: String
     var fullName: String
@@ -9,6 +10,7 @@ struct HistoryEntry: Identifiable, Codable {
     var details: String
     var timestamp: Date
 
+    // MARK: - Init
     init(id: String? = nil, medicineId: String, fullName: String, action: String, details: String, timestamp: Date = Date()) {
         self.id = id
         self.medicineId = medicineId
@@ -18,6 +20,7 @@ struct HistoryEntry: Identifiable, Codable {
         self.timestamp = timestamp
     }
 
+    // MARK: - Codings keys
     enum CodingKeys: String, CodingKey {
         case id
         case medicineId

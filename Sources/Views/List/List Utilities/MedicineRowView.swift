@@ -4,17 +4,20 @@
 //
 //  Created by Margot Pasquali on 26/03/2025.
 //
+
 import SwiftUI
 
 struct MedicineRowView: View {
+    // MARK: - Constants
     let medicine: Medicine
-
     private let lowStockThreshold = 40
 
+    // MARK: - Properties
     private var stockStatusColor: Color {
         medicine.stock <= lowStockThreshold ? .alert : .success
     }
 
+    // MARK: - View
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 4)
@@ -27,6 +30,8 @@ struct MedicineRowView: View {
                     .frame(width: 32, height: 32)
                     .foregroundStyle(stockStatusColor)
                     .opacity(medicine.stock <= lowStockThreshold ? 1.0 : 0.3)
+                    .accessibilityHidden(true)
+
                 Text(medicine.name)
                     .font(Font.custom("Nunito-SemiBold", size: 16))
                     .foregroundStyle(Color.background)
@@ -36,6 +41,7 @@ struct MedicineRowView: View {
                     .foregroundStyle(Color.background)
             }
         }
+        .accessibilityLabel("\(medicine.name), stock \(medicine.stock)\(medicine.stock <= lowStockThreshold ? ", faible stock" : "")")
     }
 }
 

@@ -8,11 +8,13 @@
 import Foundation
 
 struct User: Identifiable, Codable {
+    // MARK: - Constants
     let id: String
     let email: String
     let fullName: String
     let profileImageURL: String
 
+    // MARK: - Coding keys
     enum CodingKeys: String, CodingKey {
         case id
         case email

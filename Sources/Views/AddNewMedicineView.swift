@@ -35,6 +35,7 @@ struct AddNewMedicineView: View {
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: 300)
                         .padding(.bottom)
+                        .autocorrectionDisabled(true)
 
                     HStack {
                         Section {
@@ -62,7 +63,7 @@ struct AddNewMedicineView: View {
                                 .font(.custom("Nunito-Bold", size: 18))
                                 .foregroundStyle(Color.background)
                                 .padding(.trailing)
-                            TextField("", text: $viewModel.aisle, prompt: Text("0").foregroundColor(.gray))
+                            TextField("", text: $viewModel.aisle, prompt: Text("A1").foregroundColor(.gray))
                                 .font(.custom("Nunito-Bold", size: 18))
                                 .foregroundStyle(Color.background)
                                 .multilineTextAlignment(.leading)

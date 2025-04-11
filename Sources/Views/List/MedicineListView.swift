@@ -1,9 +1,11 @@
 import SwiftUI
 
 struct MedicineListView: View {
+    // MARK: - Properties
     @ObservedObject var viewModel = MedicineListViewModel()
     var aisle: String
 
+    // MARK: - View
     var body: some View {
         ZStack {
             Color.background
@@ -14,6 +16,7 @@ struct MedicineListView: View {
                         NavigationLink(destination: MedicineDetailView(medicine: medicine, viewModel: MedicineDetailViewModel())) {
                             MedicineListRowView(medicine: medicine)
                         }
+                        .accessibilityLabel("Médicament \(medicine.name), stock \(medicine.stock), dans l’allée \(aisle), bouton")
                     }
                 }
                 .padding(.horizontal)
@@ -24,6 +27,7 @@ struct MedicineListView: View {
                     Text(aisle)
                         .font(.custom("Nunito-Bold", size: 18))
                         .foregroundStyle(Color.text)
+                        .accessibilityLabel("Allée \(aisle)")
                 }
             }
             .onAppear {

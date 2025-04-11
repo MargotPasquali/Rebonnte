@@ -10,6 +10,7 @@ import Foundation
 @MainActor
 final class AisleListViewModel: ObservableObject {
 
+    // MARK: - Error Enum
     enum AisleListViewModelError: LocalizedError {
         case failedToFetchAisles
 
@@ -21,16 +22,20 @@ final class AisleListViewModel: ObservableObject {
         }
     }
 
+    // MARK: - Constants
     private let medicineDataService: MedicineDataService
 
+    // MARK: - Properties
     @Published var aisles: [String] = []
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
 
+    // MARK: - Init
     init(medicineDataService: MedicineDataService = RemoteMedicineDataService()) {
         self.medicineDataService = medicineDataService
     }
 
+    // MARK: - Functions
     func fetchAisles() async {
         isLoading = true
         errorMessage = nil

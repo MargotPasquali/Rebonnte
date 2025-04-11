@@ -5,9 +5,24 @@ struct MainTabView: View {
     @StateObject private var aisleViewModel = AisleListViewModel()
 
     init() {
-        UITabBar.appearance().unselectedItemTintColor = UIColor.text
+        // Customize the appearance of the UITabBar
+        let tabBarAppearance = UITabBar.appearance()
+
+        // Color of unselected items
+        tabBarAppearance.unselectedItemTintColor = UIColor.text
+
+        // Color of selected items
+        tabBarAppearance.tintColor = UIColor(named: "Action")
+
+        // Background color of the bar
+        tabBarAppearance.backgroundColor = UIColor.background
+
+        // Disable the default highlight (selection indicator)
+        tabBarAppearance.standardAppearance.selectionIndicatorTintColor = nil
+
+        // Customize the font of tab titles
         UITabBarItem.appearance().setTitleTextAttributes(
-            [.font: UIFont(name: "Nuni-Regular", size: 12) ?? UIFont.systemFont(ofSize: 12)],
+            [.font: UIFont(name: "Nunito-Regular", size: 12) ?? UIFont.systemFont(ofSize: 12)],
             for: .normal
         )
     }

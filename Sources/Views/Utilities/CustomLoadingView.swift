@@ -1,8 +1,10 @@
 import SwiftUI
 
 struct CustomLoadingView: View {
+    // MARK: - Variables
     @State private var isLoading = false
 
+    // MARK: - View
     var body: some View {
         ZStack {
             Color.background

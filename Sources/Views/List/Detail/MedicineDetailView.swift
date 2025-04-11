@@ -1,6 +1,10 @@
 import SwiftUI
 
 struct MedicineDetailView: View {
+    // MARK: - Constants
+    private let lowStockThreshold = 40
+
+    // MARK: - Properties
     @State var medicine: Medicine
     @State private var initialMedicine: Medicine
     @ObservedObject var viewModel = MedicineDetailViewModel()
@@ -8,8 +12,8 @@ struct MedicineDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var showDeleteConfirmation = false
     @State private var showErrorAlert = false
-    private let lowStockThreshold = 40
 
+    // MARK: - Init
     init(medicine: Medicine, viewModel: MedicineDetailViewModel) {
         self._medicine = State(initialValue: medicine)
         self._initialMedicine = State(initialValue: medicine)
@@ -19,69 +23,48 @@ struct MedicineDetailView: View {
     private var stockStatusColor: Color {
         medicine.stock <= lowStockThreshold ? .alert : .success
     }
+
     private var stockBinding: Binding<Double> {
         Binding<Double>(
             get: { Double(medicine.stock) },
             set: { medicine.stock = Int($0) }
         )
     }
-
+    // MARK: - View
     var body: some View {
         ZStack {
             Color.background
                 .ignoresSafeArea()
             ScrollView {
                 VStack(alignment: .leading, spacing: 10) {
-                    HStack {
-                        Spacer()
-                        VStack {
-                            Image(systemName: "pills.circle.fill")
-                                .resizable()
-                                .frame(width: 150, height: 150)
-                                .symbolRenderingMode(.palette)
-                                .foregroundStyle(stockStatusColor.opacity(medicine.stock <= lowStockThreshold ? 1.0 : 0.5), .text)
-                            // Title
-                            TextField("Name", text: $medicine.name)
-                                .font(.custom("Righteous", size: 30))
-                                .foregroundStyle(Color.text)
-                                .multilineTextAlignment(.center)
-                                .frame(maxWidth: 300)
-                                .padding(.bottom, 10)
-                                .autocorrectionDisabled(true)
-                        }
-                        Spacer()
-                    }
+                    MedicineDetailHeaderView(
+                        stockStatusColor: stockStatusColor,
+                        isLowStock: medicine.stock <= lowStockThreshold,
+                        medicineName: $medicine.name
+                    )
 
-                    // Medicine Stock
-                    medicineStockSection
+                    MedicineDetailStockSection(
+                        stockStatusColor: stockStatusColor,
+                        stock: stockBinding
+                    )
 
-                    // Medicine Aisle
-                    medicineAisleSection
+                    MedicineDetailAisleSection(aisle: $medicine.aisle)
 
-                    // History Section
-                    if viewModel.history.isEmpty {
-                        Text("No history available")
-                            .font(.custom("Nunito-Medium", size: 18))
-                            .foregroundStyle(Color.background)
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                            .background(Color.text)
-                            .cornerRadius(4)
-                    } else {
-                        historySection
-                    }
+                    MedicineDetailHistorySection(
+                        history: viewModel.history,
+                        medicineId: medicine.id
+                    )
                 }
                 .padding()
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                // Titre centré
                 ToolbarItem(placement: .principal) {
                     Text("Medicine Details")
                         .font(.custom("Nunito-Bold", size: 18))
                         .foregroundStyle(Color.text)
+                        .accessibilityLabel("Détails du médicament")
                 }
-                // Bouton "Modifier" à gauche
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
                         Task {
@@ -105,20 +88,22 @@ struct MedicineDetailView: View {
                             .frame(width: 25, height: 25)
                             .symbolRenderingMode(.palette)
                             .foregroundStyle(.success, .text)
+                            .accessibilityLabel("Valider les modifications")
                     }
                 }
-                // Bouton "Supprimer" à droite
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button(action: {
                         showDeleteConfirmation = true
                     }) {
                         Image(systemName: "trash")
                             .foregroundStyle(Color.alert)
+                            .accessibilityLabel("Supprimer le médicament")
                     }
                 }
             }
             .alert("Delete Medicine", isPresented: $showDeleteConfirmation) {
                 Button("Cancel", role: .cancel) { }
+                    .accessibilityLabel("Annuler")
                 Button("Delete", role: .destructive) {
                     Task {
                         guard medicine.id != nil else {
@@ -140,13 +125,17 @@ struct MedicineDetailView: View {
                         }
                     }
                 }
+                .accessibilityLabel("Confirmer la suppression")
             } message: {
                 Text("Are you sure you want to delete \(medicine.name)? This action cannot be undone.")
+                    .accessibilityLabel("Voulez-vous vraiment supprimer \(medicine.name) ? Cette action est irréversible.")
             }
             .alert("Error", isPresented: $showErrorAlert) {
                 Button("OK", role: .cancel) { }
+                    .accessibilityLabel("OK")
             } message: {
                 Text(viewModel.errorMessage ?? "An unknown error occurred.")
+                    .accessibilityLabel("Erreur : \(viewModel.errorMessage ?? "Une erreur inconnue s’est produite.")")
             }
             .onAppear {
                 Task {
@@ -155,78 +144,6 @@ struct MedicineDetailView: View {
                 }
             }
         }
-    }
-}
-
-extension MedicineDetailView {
-    private var medicineStockSection: some View {
-        HStack {
-            Text("Stock")
-                .font(.custom("Nunito-Bold", size: 18))
-                .foregroundStyle(Color.background)
-                .padding(.trailing)
-            Slider(value: stockBinding, in: 0...100, step: 5) {
-                Text("Stock: \(medicine.stock, specifier: "%.0f")")
-            }
-            .tint(medicine.stock < 50 ? .alert : .success)
-            Text("\(medicine.stock)")
-                .font(.custom("Nunito-Bold", size: 16))
-                .foregroundStyle(Color.background)
-                .frame(maxWidth: .infinity, alignment: .center)
-        }
-        .padding()
-        .background(Color.text)
-        .cornerRadius(4)
-    }
-
-    private var medicineAisleSection: some View {
-        HStack {
-            Text("Aisle")
-                .font(.custom("Nunito-Bold", size: 18))
-                .foregroundStyle(Color.background)
-                .padding(.trailing)
-            TextField("", text: $medicine.aisle, prompt: Text("0").foregroundColor(.gray))
-                .font(.custom("Nunito-Bold", size: 18))
-                .foregroundStyle(Color.background)
-                .multilineTextAlignment(.leading)
-        }
-        .padding()
-        .background(Color.text)
-        .cornerRadius(4)
-    }
-
-    private var historySection: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("History")
-                .font(.custom("Nunito-Bold", size: 18))
-                .foregroundStyle(Color.background)
-                .frame(maxWidth: .infinity, alignment: .leading)
-
-            ForEach(viewModel.history.filter { $0.medicineId == medicine.id }, id: \.id) { entry in
-                VStack(alignment: .leading, spacing: 5) {
-                    Text(entry.action)
-                        .font(.custom("Nunito-SemiBold", size: 16))
-                        .foregroundStyle(Color.background)
-                    Text("User: \(entry.fullName)")
-                        .font(.custom("Nunito-Regular", size: 16))
-                        .foregroundStyle(Color.background)
-                    Text("Date: \(entry.timestamp.formatted())")
-                        .font(.custom("Nunito-Light", size: 16))
-                        .foregroundStyle(Color.background)
-                    Text("Details: \(entry.details)")
-                        .font(.custom("Nunito-ExtraLight", size: 16))
-                        .foregroundStyle(Color.background)
-                }
-                .padding()
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(Color.gray.opacity(0.1))
-                .cornerRadius(10)
-            }
-        }
-        .padding()
-        .frame(maxWidth: .infinity)
-        .background(Color.text)
-        .cornerRadius(4)
     }
 }
 

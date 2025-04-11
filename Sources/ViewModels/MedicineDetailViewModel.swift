@@ -10,6 +10,7 @@ import Foundation
 @MainActor
 final class MedicineDetailViewModel: ObservableObject {
 
+    // MARK: - Error Enum
     enum MedicineDetailViewModelError: LocalizedError {
         case failedToFetchMedicines
         case failedToDeleteMedicines
@@ -30,17 +31,21 @@ final class MedicineDetailViewModel: ObservableObject {
         }
     }
 
+    // MARK: - Constants
     private let medicineDataService: MedicineDataService
 
+    // MARK: - Properties
     @Published var medicines: [Medicine] = []
     @Published var history: [HistoryEntry] = []
     @Published var isLoading: Bool = false
     @Published var errorMessage: String?
 
+    // MARK: - Init
     init(medicineDataService: MedicineDataService = RemoteMedicineDataService()) {
         self.medicineDataService = medicineDataService
     }
 
+    // MARK: - Functions
     func fetchMedicines() async {
         isLoading = true
         errorMessage = nil
@@ -69,7 +74,7 @@ final class MedicineDetailViewModel: ObservableObject {
             do {
                 try await medicineDataService.modifyMedicine(medicine, user: user, changes: changes)
             } catch {
-                print("Erreur lors de la modification : \(error)")
+                errorMessage = MedicineDetailViewModelError.failedToModifyMedicine.localizedDescription
             }
         }
 

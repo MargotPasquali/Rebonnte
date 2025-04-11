@@ -13,12 +13,15 @@ struct LoginView: View {
                 Text("Welcome")
                     .font(Font.custom("Righteous-Regular", size: 40))
                     .foregroundStyle(Color("Text Color"))
+                    .accessibilityLabel("Welcome")
+
                 Text("Email")
                     .font(Font.custom("Nunito-SemiBold", size: 20))
                     .foregroundStyle(Color("Text Color"))
                     .frame(maxWidth: .infinity, alignment: .leading)
+                    .accessibilityHidden(true)
 
-                TextField("", text: $email, prompt: Text("Entrez votre email").foregroundColor(.gray))
+                TextField("", text: $email, prompt: Text("Enter your email").foregroundColor(.gray))
                     .padding()
                     .background(Color("Text Color"))
                     .foregroundStyle(Color.background)
@@ -26,20 +29,37 @@ struct LoginView: View {
                     .cornerRadius(8)
                     .autocapitalization(.none)
                     .keyboardType(.emailAddress)
+                    .accessibilityLabel("Email")
+                    .accessibilityValue(email)
+                    .accessibilityHint("Enter your email address")
 
                 Text("Password")
                     .foregroundStyle(Color("Text Color"))
                     .font(Font.custom("Nunito-SemiBold", size: 20))
                     .frame(maxWidth: .infinity, alignment: .leading)
+                    .accessibilityHidden(true)
 
-                SecureField("", text: $password, prompt: Text("Entrez votre mot de passe").foregroundColor(.gray))
+                SecureField("", text: $password, prompt: Text("Enter your password").foregroundColor(.gray))
                     .font(Font.custom("Nunito-Regular", size: 16))
                     .padding()
                     .background(Color("Text Color"))
                     .foregroundStyle(Color.background)
                     .cornerRadius(8)
+                    .accessibilityLabel("Password")
+                    .accessibilityValue(password.isEmpty ? "Empty" : "Filled")
+                    .accessibilityHint("Enter your password")
+
+                if let errorMessage = session.errorMessage {
+                    Text(errorMessage)
+                        .foregroundColor(.red)
+                        .font(Font.custom("Nunito-Regular", size: 12))
+                        .accessibilityLabel("Error: \(errorMessage)")
+                }
+
                 Button(action: {
-                    session.signIn(email: email, password: password)
+                    Task {
+                        await session.signIn(email: email, password: password)
+                    }
                 }) {
                     Text("Login")
                         .frame(maxWidth: .infinity)
@@ -50,14 +70,20 @@ struct LoginView: View {
                         .cornerRadius(8)
                         .padding(.top, 20)
                 }
+                .accessibilityLabel("Sign in")
+                .accessibilityHint("Tap to sign in with your email and password")
+
                 Button(action: {
-                    session.signUp(email: email, password: password)
+                    Task {
+                        await session.signUp(email: email, password: password)
+                    }
                 }) {
                     Text("Sign Up")
                         .font(Font.custom("Nunito-ExtraBold", size: 18))
                         .foregroundStyle(Color("Text Color"))
-
                 }
+                .accessibilityLabel("Sign up")
+                .accessibilityHint("Tap to create a new account")
             }
             .padding()
         }
