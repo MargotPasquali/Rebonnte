@@ -57,6 +57,7 @@
 		AE9A7D072D9D6E5D007F66D6 /* AisleListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9A7D062D9D6E5D007F66D6 /* AisleListViewModel.swift */; };
 		AE9A7D092D9D7096007F66D6 /* AddNewMedicineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9A7D082D9D7096007F66D6 /* AddNewMedicineView.swift */; };
 		AE9A7D642D9D70C3007F66D6 /* AddNewMedicineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9A7D632D9D70C3007F66D6 /* AddNewMedicineViewModel.swift */; };
+		AE9CF1232DAC16E100D373B6 /* UserDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9CF1222DAC16E100D373B6 /* UserDataService.swift */; };
 		AE9EFE842DA6AD8200AF76CD /* MedecineChangeRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE9EFE832DA6AD8200AF76CD /* MedecineChangeRequest.swift */; };
 		AEE7ACE12D8B20A5003081EC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = AEE7ACE02D8B20A5003081EC /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
@@ -120,6 +121,7 @@
 		AE9A7D062D9D6E5D007F66D6 /* AisleListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AisleListViewModel.swift; sourceTree = "<group>"; };
 		AE9A7D082D9D7096007F66D6 /* AddNewMedicineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNewMedicineView.swift; sourceTree = "<group>"; };
 		AE9A7D632D9D70C3007F66D6 /* AddNewMedicineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNewMedicineViewModel.swift; sourceTree = "<group>"; };
+		AE9CF1222DAC16E100D373B6 /* UserDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDataService.swift; sourceTree = "<group>"; };
 		AE9EFE832DA6AD8200AF76CD /* MedecineChangeRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedecineChangeRequest.swift; sourceTree = "<group>"; };
 		AEE7ACE02D8B20A5003081EC /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -235,6 +237,7 @@
 			isa = PBXGroup;
 			children = (
 				AE1F45542D91AF0300348EF0 /* MedicineDataService.swift */,
+				AE9CF1222DAC16E100D373B6 /* UserDataService.swift */,
 			);
 			path = DataService;
 			sourceTree = "<group>";
@@ -543,6 +546,7 @@
 				AE3224DE2DA7FCA000C46DFD /* AppearancePreference.swift in Sources */,
 				53E0D8EE2C06718100DE1134 /* AllMedicinesView.swift in Sources */,
 				AE3C11552D9C3F9A001FAAB5 /* CustomLoadingView.swift in Sources */,
+				AE9CF1232DAC16E100D373B6 /* UserDataService.swift in Sources */,
 				AE9A7D092D9D7096007F66D6 /* AddNewMedicineView.swift in Sources */,
 				AE9A7D642D9D70C3007F66D6 /* AddNewMedicineViewModel.swift in Sources */,
 				AE9EFE842DA6AD8200AF76CD /* MedecineChangeRequest.swift in Sources */,

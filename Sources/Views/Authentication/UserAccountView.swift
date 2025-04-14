@@ -2,8 +2,11 @@ import SwiftUI
 import Kingfisher
 
 struct UserAccountView: View {
+    // MARK: - Properties
     @EnvironmentObject var session: SessionStore
     @State private var showErrorAlert = false
+    @State private var newName: String = ""
+    @State private var showSuccess = false
 
     var body: some View {
         ZStack {
@@ -31,10 +34,15 @@ struct UserAccountView: View {
                         .foregroundColor(Color.text)
                         .accessibilityLabel("Photo de profil par défaut")
                 }
-                Text(session.fullName)
+
+                TextField("Entrez votre nom", text: $newName, prompt: Text(session.fullName).foregroundColor(.text))
+                    .padding()
                     .font(Font.custom("Righteous", size: 25))
-                    .foregroundStyle(Color.text)
-                    .accessibilityLabel("Nom : \(session.fullName)")
+                    .cornerRadius(4)
+                    .foregroundColor(.text)
+                    .textInputAutocapitalization(.words)
+                    .autocorrectionDisabled(true)
+                    .multilineTextAlignment(.center)
 
                 Text(session.email)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -79,6 +87,30 @@ struct UserAccountView: View {
                     }
                 }
                 Button(action: {
+                    Task {
+                        do {
+                            try await session.updateUserName(newName: newName)
+                            showSuccess = true
+                        } catch {
+                            session.errorMessage = error.localizedDescription
+                            showErrorAlert = true
+                        }
+                    }
+                }) {
+                    Text("Update Name")
+                        .foregroundColor(Color.text)
+                        .font(Font.custom("Nunito-SemiBold", size: 18))
+                }
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.action)
+                .cornerRadius(4)
+                .padding(.top, 10)
+                .alert(isPresented: $showSuccess) {
+                    Alert(title: Text("Success"), message: Text("Votre nom a bien été modifié"), dismissButton: .default(Text("OK")))
+                }
+
+                Button(action: {
                     do {
                         try session.signOut()
                     } catch {
@@ -95,7 +127,7 @@ struct UserAccountView: View {
                 .background(Color.background)
                 .border(Color.text, width: 2)
                 .cornerRadius(8)
-                .padding(.top, 20)
+                .padding(.top, 5)
                 .accessibilityLabel("Se déconnecter")
                 .accessibilityHint("Appuyez pour vous déconnecter")
 
