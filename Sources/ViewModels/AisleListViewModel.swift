@@ -40,13 +40,16 @@ final class AisleListViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
 
-        do {
-            let fetchedAisles = try await medicineDataService.retrieveAisles()
-            self.aisles = fetchedAisles
-        } catch {
-            errorMessage = AisleListViewModelError.failedToFetchAisles.localizedDescription
+        Task {
+            do {
+                let fetchedAisles = try await medicineDataService.retrieveAisles()
+                Task {@MainActor in
+                    self.aisles = fetchedAisles
+                }
+            } catch {
+                errorMessage = AisleListViewModelError.failedToFetchAisles.localizedDescription
+            }
         }
-
         isLoading = false
     }
 }

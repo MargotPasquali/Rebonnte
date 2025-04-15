@@ -53,7 +53,6 @@ class SessionStore: ObservableObject {
     private let data = Firestore.firestore()
 
     // MARK: - Init
-    // MARK: - Init
         init(userDataService: UserDataService = RemoteUserDataService()) {
             self.userDataService = userDataService
             if let savedPreference = UserDefaults.standard.string(forKey: "appearancePreference"),
@@ -168,9 +167,7 @@ class SessionStore: ObservableObject {
         }
 
         do {
-            // Mettre à jour le nom via le service
             try await userDataService.updateUserName(userId: userId, newName: newName)
-            // Rafraîchir les données utilisateur pour mettre à jour l'UI
             await fetchUserData(userId: userId)
         } catch {
             errorMessage = SessionStoreError.fetchUserDataFailed.localizedDescription

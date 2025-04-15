@@ -4,6 +4,12 @@
 //
 //  Created by Margot Pasquali on 02/04/2025.
 //
+//
+//  AddNewMedicineViewModel.swift
+//  MediStock
+//
+//  Created by Margot Pasquali on 02/04/2025.
+//
 
 import Foundation
 
@@ -55,7 +61,7 @@ final class AddNewMedicineViewModel: ObservableObject {
             errorMessage = AddNewMedicineError.invalidData.localizedDescription
             return
         }
-        guard stock > 0 && stock <= 100 else {
+        guard stock >= 0 && stock <= 100 else {
             errorMessage = AddNewMedicineError.invalidData.localizedDescription
             isLoading = false
             return
@@ -64,34 +70,38 @@ final class AddNewMedicineViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
 
-        do {
-            let exists = try await medicineDataService.checkForDuplicate(name: name)
-            guard !exists else {
-                errorMessage = AddNewMedicineError.medicineAlreadyExists.localizedDescription
-                isLoading = false
-                return
+        Task {
+            do {
+                let exists = try await medicineDataService.checkForDuplicate(name: name)
+                guard !exists else {
+                    Task { @MainActor in
+                        self.errorMessage = AddNewMedicineError.medicineAlreadyExists.localizedDescription
+                        self.isLoading = false
+                    }
+                    return
+                }
+
+                let newMedicine = Medicine(
+                    id: nil,
+                    name: name,
+                    stock: stock,
+                    aisle: aisle
+                )
+
+                try await medicineDataService.addMedicine(medicine: newMedicine)
+
+                Task { @MainActor in
+                    self.errorMessage = nil
+                    self.resetFields()
+                    self.isLoading = false
+                }
+            } catch {
+                Task { @MainActor in
+                    self.errorMessage = AddNewMedicineError.failedToAddNewMedicine.localizedDescription
+                    self.isLoading = false
+                }
             }
-        } catch {
-            errorMessage = AddNewMedicineError.failedToAddNewMedicine.localizedDescription
-            isLoading = false
-            return
         }
-
-        let newMedicine = Medicine(
-            id: nil,
-            name: name,
-            stock: stock,
-            aisle: aisle
-        )
-
-        do {
-            try await medicineDataService.addMedicine(medicine: newMedicine)
-            errorMessage = nil
-            resetFields()
-        } catch {
-            errorMessage = AddNewMedicineError.failedToAddNewMedicine.localizedDescription
-        }
-        isLoading = false
     }
 
     private func resetFields() {

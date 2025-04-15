@@ -2,7 +2,7 @@ import SwiftUI
 
 struct AllMedicinesView: View {
     // MARK: - Properties
-    @ObservedObject var viewModel = MedicineListViewModel()
+    @EnvironmentObject var viewModel: MedicineListViewModel
     @State private var showAddNewMedicineView = false
 
     // MARK: - Constants
@@ -65,6 +65,12 @@ struct AllMedicinesView: View {
                             }
                             .padding(.horizontal, 16)
                             .padding(.top, 8)
+
+                            if viewModel.canLoadMore {
+                                LoadMoreButton()
+                                    .padding(.vertical, 5)
+                                    .frame(maxWidth: .infinity)
+                            }
                         }
                     }
                 }
@@ -76,7 +82,7 @@ struct AllMedicinesView: View {
                         .frame(width: 30, height: 30)
                         .foregroundStyle(Color.action)
                         .accessibilityLabel("Ajouter un nouveau médicament")
-                })
+                }) // Suppression de la parenthèse supplémentaire
                 .sheet(isPresented: $showAddNewMedicineView, onDismiss: {
                     Task {
                         await viewModel.fetchMedicines()
@@ -88,7 +94,9 @@ struct AllMedicinesView: View {
             }
             .onAppear {
                 Task {
-                    await viewModel.fetchMedicines()
+                    if viewModel.displayedMedicines.isEmpty {
+                        await viewModel.fetchMedicines()
+                    }
                 }
             }
             .onChange(of: viewModel.sortOption) { newSortOption in
@@ -108,4 +116,5 @@ struct AllMedicinesView: View {
 
 #Preview {
     AllMedicinesView()
+        .environmentObject(MedicineListViewModel())
 }

@@ -50,40 +50,51 @@ final class MedicineDetailViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
 
-        do {
-            let fetchedMedicines = try await medicineDataService.retrieveMedicines()
-            self.medicines = fetchedMedicines
-        } catch {
-            errorMessage = MedicineDetailViewModelError.failedToFetchMedicines.localizedDescription
+        Task {
+            do {
+                let fetchedMedicines = try await medicineDataService.retrieveMedicines()
+                Task {@MainActor in
+                    self.medicines = fetchedMedicines
+                }
+            } catch {
+                errorMessage = MedicineDetailViewModelError.failedToFetchMedicines.localizedDescription
+            }
         }
-
         isLoading = false
     }
 
     func deleteMedicines(at offsets: IndexSet) async {
         let medicinesToDelete = offsets.map { medicines[$0] }
-        do {
-            try await medicineDataService.removeMedicines(medicines: medicinesToDelete)
-            await fetchMedicines()
-        } catch {
-            errorMessage = MedicineDetailViewModelError.failedToDeleteMedicines.localizedDescription
+        Task {
+            do {
+                try await medicineDataService.removeMedicines(medicines: medicinesToDelete)
+                await fetchMedicines()
+            } catch {
+                errorMessage = MedicineDetailViewModelError.failedToDeleteMedicines.localizedDescription
+            }
         }
     }
 
     func modifyMedicine(_ medicine: Medicine, user: String, changes: [MedecineChangeRequest]) async {
+        Task {
             do {
                 try await medicineDataService.modifyMedicine(medicine, user: user, changes: changes)
             } catch {
                 errorMessage = MedicineDetailViewModelError.failedToModifyMedicine.localizedDescription
             }
         }
+    }
 
     func fetchHistory(for medicine: Medicine) async {
-        do {
-            let fetchedHistory = try await medicineDataService.retrieveMedicineHistory(for: medicine)
-            self.history = fetchedHistory
-        } catch {
-            errorMessage = MedicineDetailViewModelError.failedToFetchHistory.localizedDescription
+        Task {
+            do {
+                let fetchedHistory = try await medicineDataService.retrieveMedicineHistory(for: medicine)
+                Task {@MainActor in
+                    self.history = fetchedHistory
+                }
+            } catch {
+                errorMessage = MedicineDetailViewModelError.failedToFetchHistory.localizedDescription
+            }
         }
     }
 }
