@@ -24,7 +24,7 @@ final class MedicineListViewModel: ObservableObject {
     private let medicineDataService: MedicineDataService
     private let pageSize = 12
     private var currentPage = 0
-
+    
     // MARK: - Properties
     @Published var searchText: String = ""
     @Published var isLoading: Bool = false
@@ -63,12 +63,14 @@ final class MedicineListViewModel: ObservableObject {
             do {
                 let fetchedMedicines = try await medicineDataService.retrieveMedicines()
                 Task { @MainActor in
-                    allMedicines = fetchedMedicines
-                    self.medicines = allMedicines
-                    loadMoreMedicines()
+                    self.allMedicines = fetchedMedicines
+                    self.medicines = self.allMedicines
+                    self.loadMoreMedicines()
+                    self.isLoading = false
                 }
             } catch {
                 errorMessage = MedicineListViewModelError.failedToFetchMedicines.localizedDescription
+                self.isLoading = false
             }
         }
 
@@ -85,11 +87,14 @@ final class MedicineListViewModel: ObservableObject {
             do {
                 let sortedMedicines = try await medicineDataService.retrieveMedicinesSortedByName()
                 Task { @MainActor in
-                    allMedicines = sortedMedicines
-                    loadMoreMedicines()
+                    self.allMedicines = sortedMedicines
+                    self.medicines = self.allMedicines
+                    self.loadMoreMedicines()
+                    self.isLoading = false
                 }
             } catch {
                 errorMessage = MedicineListViewModelError.failedToFetchMedicineByName.localizedDescription
+                self.isLoading = false
             }
         }
 
@@ -106,11 +111,14 @@ final class MedicineListViewModel: ObservableObject {
             do {
                 let sortedMedicines = try await medicineDataService.retrieveMedicinesSortedByStock()
                 Task { @MainActor in
-                    allMedicines = sortedMedicines
-                    loadMoreMedicines()
+                    self.allMedicines = sortedMedicines
+                    self.medicines = self.allMedicines
+                    self.loadMoreMedicines()
+                    self.isLoading = false
                 }
             } catch {
                 errorMessage = MedicineListViewModelError.failedToFetchMedicineByStock.localizedDescription
+                self.isLoading = false
             }
         }
         isLoading = false
