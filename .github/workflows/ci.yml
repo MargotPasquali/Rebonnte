@@ -73,7 +73,7 @@ jobs:
 
       - name: Export Test Results to JSON
         run: |
-          xcrun xcresulttool get --format json --path ./TestResults/TestResults.xcresult > ./TestResults/test-results.json
+          xcrun xcresulttool get --legacy --format json --path ./TestResults/TestResults.xcresult > ./TestResults/test-results.json
         if: always()
 
       - name: Upload Test Results Artifact
