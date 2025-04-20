@@ -1,8 +1,12 @@
-# Updated workflow to improve test result processing and ensure compatibility with Xcode 16 for Swift Testing
 name: iOS Build and Test
 
 on:
   push:
+    branches:
+      - main
+      - develop
+      - update-ci
+  pull_request:
     branches:
       - main
       - develop
@@ -24,6 +28,9 @@ jobs:
       - name: Verify Xcode version
         run: xcodebuild -version
 
+      - name: List available simulators
+        run: xcrun simctl list devices
+
       - name: Create GoogleService-Info.plist
         env:
           GOOGLE_SERVICE_PLIST: ${{ secrets.GOOGLE_SERVICE_PLIST }}
@@ -36,7 +43,7 @@ jobs:
         with:
           project: MediStock.xcodeproj
           scheme: MediStock
-          destination: 'platform=iOS Simulator,name=iPhone 16 Pro'
+          destination: 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.0'
           action: test
           result-bundle-path: './TestResults/TestResults.xcresult'
           skip-package-plugin-validation: true
