@@ -45,8 +45,7 @@ jobs:
             -scheme MediStock \
             -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.1' \
             -resultBundlePath ./TestResults/TestResults.xcresult \
-            -skipPackagePluginValidation \
-            -disableAutomaticPackageResolution
+            -skipPackagePluginValidation
 
       - name: Debug - List files in TestResults directory
         run: |
@@ -56,19 +55,13 @@ jobs:
           ls -la TestResults || echo "TestResults directory not found"
         if: always()
 
-      - name: Export Test Diagnostics
-        run: |
-          xcrun xcresulttool export --legacy --path ./TestResults/TestResults.xcresult --output-path ./TestResults/diagnostics --type diagnostics
-        if: always()
-
-      - name: Generate Code Coverage Report
-        run: |
-          xcrun xccov view --report --only-targets ./TestResults/TestResults.xcresult > ./TestResults/coverage.html
-        if: always()
-
-      - name: Export Test Results to JSON
-        run: |
-          xcrun xcresulttool get --legacy --format json --path ./TestResults/TestResults.xcresult > ./TestResults/test-results.json
+      - name: Process Test Results
+        uses: kishikawakatsumi/xcresulttool@v1
+        with:
+          path: ./TestResults/TestResults.xcresult
+          title: "MediStock Test Results"
+          show-passed-tests: true
+          show-code-coverage: true
         if: always()
 
       - name: Upload Test Results Artifact
@@ -76,18 +69,4 @@ jobs:
         with:
           name: test-results
           path: ./TestResults/TestResults.xcresult
-        if: always()
-
-      - name: Upload Coverage Report
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage-report
-          path: ./TestResults/coverage.html
-        if: always()
-
-      - name: Upload Test Results JSON
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-results-json
-          path: ./TestResults/test-results.json
         if: always()
