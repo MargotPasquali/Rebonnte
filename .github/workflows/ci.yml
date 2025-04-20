@@ -43,7 +43,7 @@ jobs:
           xcodebuild test -verbose \
             -project MediStock.xcodeproj \
             -scheme MediStock \
-            -destination 'platform=iOS Simulator,name=iPhone 14,OS=17.5' \
+            -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.1' \
             -resultBundlePath ./TestResults/TestResults.xcresult \
             -skipPackagePluginValidation
 
