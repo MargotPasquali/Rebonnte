@@ -7,10 +7,6 @@ on:
       - main
       - develop
       - update-ci
-  branches:
-         - main
-         - develop
-         - update-ci
 
 jobs:
   build-and-test:
