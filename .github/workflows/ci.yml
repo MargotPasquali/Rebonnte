@@ -1,3 +1,4 @@
+# Updated workflow to improve test result processing and ensure compatibility with latest xcodebuild-action
 name: iOS Build and Test
 
 on:
