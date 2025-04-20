@@ -2,11 +2,13 @@ import Foundation
 import FirebaseFirestoreSwift
 
 struct Medicine: Identifiable, Codable, Equatable {
+    // MARK: - Properties
     @DocumentID var id: String?
     var name: String
     var stock: Int
     var aisle: String
 
+    // MARK: - Init
     init(id: String? = nil, name: String, stock: Int, aisle: String) {
         self.id = id
         self.name = name
