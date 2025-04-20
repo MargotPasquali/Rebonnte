@@ -78,7 +78,7 @@ jobs:
       - name: Process Test Results
         uses: kishikawakatsumi/xcresulttool@v1
         with:
-          path: ./TestResults/TestResults.xcresult
+          path: 'TestResults.xcresult'
           title: "MediStock Test Results"
           show-passed-tests: true
           show-code-coverage: true
