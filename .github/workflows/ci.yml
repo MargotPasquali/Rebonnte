@@ -10,11 +10,14 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: macos-latest
+    runs-on: macos-14
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Clean build directory
+        run: xcodebuild clean -project MediStock.xcodeproj -scheme MediStock
 
       - name: Create GoogleService-Info.plist
         env:
