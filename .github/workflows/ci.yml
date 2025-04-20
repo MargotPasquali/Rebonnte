@@ -1,4 +1,4 @@
-# Updated workflow to improve test result processing, ensure compatibility with Xcode 16 for Swift Testing and debug xcrun errors
+# Updated workflow to debug xcrun exit code 64, ensure Xcode 16 compatibility for Swift Testing
 name: iOS Build and Test
 
 on:
@@ -38,6 +38,13 @@ jobs:
       - name: List project information
         run: xcodebuild -list -project MediStock.xcodeproj
 
+      - name: Debug - List project files
+        run: |
+          echo "Listing files in the workspace:"
+          ls -la .
+          echo "Listing files in MediStock.xcodeproj directory:"
+          ls -la MediStock.xcodeproj || echo "MediStock.xcodeproj directory not found"
+
       - name: Debug - Verify directory structure
         run: |
           echo "Listing files in the workspace:"
@@ -56,14 +63,13 @@ jobs:
           echo "$GOOGLE_SERVICE_PLIST" > Sources/GoogleService-Info.plist
 
       - name: Build and Test
-        uses: sersoft-gmbh/xcodebuild-action@v3.2.0
-        with:
-          project: MediStock.xcodeproj
-          scheme: MediStock
-          destination: 'platform=iOS Simulator,name=iPhone 16 Pro'
-          action: test
-          result-bundle-path: './TestResults/TestResults.xcresult'
-          skip-package-plugin-validation: true
+        run: |
+          xcodebuild test -verbose \
+            -project MediStock.xcodeproj \
+            -scheme MediStock \
+            -destination 'platform=iOS Simulator,name=iPhone 15' \
+            -resultBundlePath ./TestResults/TestResults.xcresult \
+            -skipPackagePluginValidation
 
       - name: Debug - List files in TestResults directory
         run: |
