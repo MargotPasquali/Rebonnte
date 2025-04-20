@@ -1,8 +1,13 @@
-# Updated workflow to improve test result processing and ensure compatibility with latest xcodebuild-action
+# Updated workflow to improve test result processing, ensure compatibility with Xcode 16 for Swift Testing
 name: iOS Build and Test
 
 on:
   push:
+    branches:
+      - main
+      - develop
+      - update-ci
+  pull_request:
     branches:
       - main
       - develop
@@ -15,6 +20,14 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Select Xcode 16
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.0'
+
+      - name: Verify Xcode version
+        run: xcodebuild -version
 
       - name: Clean build directory
         run: xcodebuild clean -project MediStock.xcodeproj -scheme MediStock
