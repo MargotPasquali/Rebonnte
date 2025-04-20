@@ -1,4 +1,4 @@
-# Updated workflow to improve test result processing, ensure compatibility with Xcode 16.1 for Swift Testing
+# Updated workflow to improve test result processing, ensure compatibility with Xcode 16 for Swift Testing and debug xcrun errors
 name: iOS Build and Test
 
 on:
@@ -21,13 +21,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Select Xcode 16.1
+      - name: Select Xcode 16
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '16.1'
+          xcode-version: '16'
 
       - name: Verify Xcode version
         run: xcodebuild -version
+
+      - name: List available Xcode versions
+        run: ls -la /Applications/Xcode*
+
+      - name: List available simulators
+        run: xcrun simctl list devices
+
+      - name: List project information
+        run: xcodebuild -list -project MediStock.xcodeproj
 
       - name: Debug - Verify directory structure
         run: |
