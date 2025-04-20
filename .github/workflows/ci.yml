@@ -39,14 +39,13 @@ jobs:
           echo "$GOOGLE_SERVICE_PLIST" > Sources/GoogleService-Info.plist
 
       - name: Build and Test
-        uses: sersoft-gmbh/xcodebuild-action@v3.2.0
-        with:
-          project: MediStock.xcodeproj
-          scheme: MediStock
-          destination: 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.0'
-          action: test
-          result-bundle-path: './TestResults/TestResults.xcresult'
-          skip-package-plugin-validation: true
+        run: |
+          xcodebuild test -verbose \
+            -project MediStock.xcodeproj \
+            -scheme MediStock \
+            -destination 'platform=iOS Simulator,name=iPhone 14,OS=17.5' \
+            -resultBundlePath ./TestResults/TestResults.xcresult \
+            -skipPackagePluginValidation
 
       - name: Debug - List files in TestResults directory
         run: |
