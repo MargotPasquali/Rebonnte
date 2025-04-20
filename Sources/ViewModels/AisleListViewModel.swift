@@ -1,30 +1,16 @@
-//
-//  AisleListViewModel.swift
-//  MediStock
-//
-//  Created by Margot Pasquali on 02/04/2025.
-//
-
 import Foundation
 
 @MainActor
 final class AisleListViewModel: ObservableObject {
-
     // MARK: - Error Enum
     enum AisleListViewModelError: LocalizedError {
         case failedToFetchAisles
-
-        var errorDescription: String? {
-            switch self {
-            case .failedToFetchAisles:
-                return "Failed to fetch aisle list."
-            }
-        }
+        var errorDescription: String? { "Échec de la récupération des rayons." }
     }
 
     // MARK: - Constants
     private let medicineDataService: MedicineDataService
-
+    
     // MARK: - Properties
     @Published var aisles: [String] = []
     @Published var isLoading: Bool = false
@@ -36,20 +22,22 @@ final class AisleListViewModel: ObservableObject {
     }
 
     // MARK: - Functions
-    func fetchAisles() async {
+    func startObserving() {
         isLoading = true
-        errorMessage = nil
-
         Task {
-            do {
-                let fetchedAisles = try await medicineDataService.retrieveAisles()
-                Task {@MainActor in
-                    self.aisles = fetchedAisles
+            medicineDataService.observeMedicinesWithoutSort { [weak self] medicines in
+                Task { @MainActor in
+                    guard let self = self else { return }
+                    self.aisles = Array(Set(medicines.map { $0.aisle })).sorted()
+                    self.isLoading = false
                 }
-            } catch {
-                errorMessage = AisleListViewModelError.failedToFetchAisles.localizedDescription
             }
         }
-        isLoading = false
+    }
+
+    func stopObserving() {
+        Task {
+            medicineDataService.stopListening()
+        }
     }
 }

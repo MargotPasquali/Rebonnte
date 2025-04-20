@@ -3,8 +3,7 @@ import SwiftUI
 struct MainTabView: View {
     @EnvironmentObject var session: SessionStore
     @StateObject private var aisleViewModel = AisleListViewModel()
-    @StateObject private var medicineListViewModel = MedicineListViewModel()
-
+    @EnvironmentObject var medicineListViewModel: MedicineListViewModel
     init() {
         // Customize the appearance of the UITabBar
         let tabBarAppearance = UITabBar.appearance()
@@ -40,7 +39,6 @@ struct MainTabView: View {
                         Text("Aisles")
                     }
                 AllMedicinesView()
-                    .environmentObject(medicineListViewModel)
                     .tabItem {
                         Image(systemName: "square.grid.2x2")
                         Text("All Medicines")

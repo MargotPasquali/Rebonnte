@@ -4,12 +4,6 @@
 //
 //  Created by Margot Pasquali on 02/04/2025.
 //
-//
-//  AddNewMedicineViewModel.swift
-//  MediStock
-//
-//  Created by Margot Pasquali on 02/04/2025.
-//
 
 import Foundation
 

@@ -13,103 +13,111 @@ final class MockMedicineDataService: MedicineDataService {
     
     // MARK: - Enum
     enum MockMedicineDataServiceError: Error {
-        case fetchMedicinesFailed
-        case fetchMedicinesSortedByNameFailed
-        case fetchMedicinesSortedByStockFailed
+        case observeMedicinesFailed
+        case observeMedicinesWithoutSortFailed
+        case observeHistoryFailed
         case checkForDuplicateFailed
-        case fetchAislesFailed
         case removeMedicinesFailed
         case modifyMedicineFailed
-        case fetchHistoryFailed
         case addMedicineFailed
         
         var localizedDescription: String {
             switch self {
-            case .fetchMedicinesFailed:
-                return "Failed to fetch medicines."
-            case .fetchMedicinesSortedByNameFailed:
-                return "Failed to fetch medicines sorted by name."
-            case .fetchMedicinesSortedByStockFailed:
-                return "Failed to fetch medicines sorted by stock."
+            case .observeMedicinesFailed:
+                return "Failed to observe medicines."
+            case .observeMedicinesWithoutSortFailed:
+                return "Failed to observe medicines without sort."
+            case .observeHistoryFailed:
+                return "Failed to observe history."
             case .checkForDuplicateFailed:
                 return "Failed to check for duplicate medicine."
-            case .fetchAislesFailed:
-                return "Failed to fetch aisles."
             case .removeMedicinesFailed:
                 return "Failed to remove medicines."
             case .modifyMedicineFailed:
                 return "Failed to modify medicine."
-            case .fetchHistoryFailed:
-                return "Failed to fetch history."
             case .addMedicineFailed:
                 return "Failed to add medicine."
             }
         }
     }
-    
+
     // MARK: - Properties
     var medicines: [Medicine] = []
     var history: [HistoryEntry] = []
-    var aisles: [String] = []
-    
-    var shouldThrowFetchMedicinesError = false
-    var shouldThrowFetchMedicinesSortedByNameError = false
-    var shouldThrowFetchMedicinesSortedByStockError = false
+    var isListening: Bool = false
+    private var medicinesCompletion: (([Medicine]) -> Void)?
+    private var historyCompletions: [String: ([HistoryEntry]) -> Void] = [:]
+
+    var shouldThrowObserveMedicinesError = false
+    var shouldThrowObserveMedicinesWithoutSortError = false
+    var shouldThrowObserveHistoryError = false
     var shouldThrowCheckForDuplicateError = false
-    var shouldThrowFetchAislesError = false
     var shouldThrowRemoveMedicinesError = false
     var shouldThrowModifyMedicineError = false
-    var shouldThrowFetchHistoryError = false
     var shouldThrowAddMedicineError = false
-    
+
     // MARK: - Init with default data
     init(medicines: [Medicine] = [
         Medicine(id: "testMedicineID1", name: "Aspirin", stock: 50, aisle: "A1"),
         Medicine(id: "testMedicineID2", name: "Paracetamol", stock: 30, aisle: "B2")
     ], history: [HistoryEntry] = [
         HistoryEntry(id: "history1", medicineId: "testMedicineID1", fullName: "Test User", action: "Added", details: "Added medicine", timestamp: Date())
-    ], aisles: [String] = ["A1", "B2"]) {
+    ]) {
         self.medicines = medicines
         self.history = history
-        self.aisles = aisles
     }
-    
+
     // MARK: - Functions
-    func retrieveMedicines() async throws -> [Medicine] {
-        if shouldThrowFetchMedicinesError {
-            throw MockMedicineDataServiceError.fetchMedicinesFailed
+    func observeMedicines(sortOption: SortOption, completion: @escaping ([Medicine]) -> Void) {
+        isListening = true
+        medicinesCompletion = completion
+        if shouldThrowObserveMedicinesError {
+            completion([]) // Return empty list to simulate failure
+            return
         }
-        return medicines
-    }
-    
-    func retrieveMedicinesSortedByName() async throws -> [Medicine] {
-        if shouldThrowFetchMedicinesSortedByNameError {
-            throw MockMedicineDataServiceError.fetchMedicinesSortedByNameFailed
+        let sortedMedicines: [Medicine]
+        switch sortOption {
+        case .name:
+            sortedMedicines = medicines.sorted { $0.name < $1.name }
+        case .stock:
+            sortedMedicines = medicines.sorted { $0.stock < $1.stock }
         }
-        return medicines.sorted { $0.name < $1.name }
+        completion(sortedMedicines)
     }
-    
-    func retrieveMedicinesSortedByStock() async throws -> [Medicine] {
-        if shouldThrowFetchMedicinesSortedByStockError {
-            throw MockMedicineDataServiceError.fetchMedicinesSortedByStockFailed
+
+    func observeMedicinesWithoutSort(completion: @escaping ([Medicine]) -> Void) {
+        isListening = true
+        medicinesCompletion = completion
+        if shouldThrowObserveMedicinesWithoutSortError {
+            completion([])
+            return
         }
-        return medicines.sorted { $0.stock < $1.stock }
+        completion(medicines)
     }
-    
+
+    // Observe history for a specific medicine and call completion with results
+    func observeMedicineHistory(for medicine: Medicine, completion: @escaping ([HistoryEntry]) -> Void) {
+        guard let medicineId = medicine.id else {
+            completion([])
+            return
+        }
+        isListening = true
+        historyCompletions[medicineId] = completion
+        if shouldThrowObserveHistoryError {
+            completion([])
+            return
+        }
+        let filteredHistory = history.filter { $0.medicineId == medicineId }
+        completion(filteredHistory)
+    }
+
     func checkForDuplicate(name: String) async throws -> Bool {
         if shouldThrowCheckForDuplicateError {
             throw MockMedicineDataServiceError.checkForDuplicateFailed
         }
         return medicines.contains { $0.name.lowercased() == name.lowercased() }
     }
-    
-    func retrieveAisles() async throws -> [String] {
-        if shouldThrowFetchAislesError {
-            throw MockMedicineDataServiceError.fetchAislesFailed
-        }
-        return aisles
-    }
-    
+
     func removeMedicines(medicines: [Medicine]) async throws {
         if shouldThrowRemoveMedicinesError {
             throw MockMedicineDataServiceError.removeMedicinesFailed
@@ -117,8 +125,13 @@ final class MockMedicineDataService: MedicineDataService {
         for medicine in medicines {
             self.medicines.removeAll { $0.id == medicine.id }
         }
+        // Simulate a listener update
+        if let completion = medicinesCompletion {
+            let sortedMedicines = self.medicines.sorted { $0.name < $1.name } // Simulate default sort by name
+            completion(sortedMedicines)
+        }
     }
-    
+
     func modifyMedicine(_ medicine: Medicine, user: String, changes: [MedecineChangeRequest]) async throws {
         if shouldThrowModifyMedicineError {
             throw MockMedicineDataServiceError.modifyMedicineFailed
@@ -135,15 +148,19 @@ final class MockMedicineDataService: MedicineDataService {
             timestamp: Date()
         )
         history.append(historyEntry)
-    }
-    
-    func retrieveMedicineHistory(for medicine: Medicine) async throws -> [HistoryEntry] {
-        if shouldThrowFetchHistoryError {
-            throw MockMedicineDataServiceError.fetchHistoryFailed
+        // Simulate a listener update for medicines
+        if let completion = medicinesCompletion {
+            let sortedMedicines = self.medicines.sorted { $0.name < $1.name } // Simulate default sort by name
+            completion(sortedMedicines)
         }
-        return history.filter { $0.medicineId == medicine.id }
+        // Simulate a listener update for history
+        if let medicineId = medicine.id, let historyCompletion = historyCompletions[medicineId] {
+            let filteredHistory = self.history.filter { $0.medicineId == medicineId }
+            historyCompletion(filteredHistory)
+        }
     }
-    
+
+    // Add a new medicine to the mock data
     func addMedicine(medicine: Medicine) async throws {
         if shouldThrowAddMedicineError {
             throw MockMedicineDataServiceError.addMedicineFailed
@@ -151,6 +168,18 @@ final class MockMedicineDataService: MedicineDataService {
         var newMedicine = medicine
         newMedicine.id = UUID().uuidString
         medicines.append(newMedicine)
+        // Simulate a listener update
+        if let completion = medicinesCompletion {
+            let sortedMedicines = self.medicines.sorted { $0.name < $1.name } // Simulate default sort by name
+            completion(sortedMedicines)
+        }
+    }
+
+    // Stop all active listeners and clear completion handlers
+    func stopListening() {
+        isListening = false
+        medicinesCompletion = nil
+        historyCompletions.removeAll()
     }
 }
 extension MedecineChangeRequest {

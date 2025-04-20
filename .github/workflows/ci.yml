@@ -33,7 +33,7 @@ jobs:
           destination: 'platform=iOS Simulator,name=iPhone 16 Pro'
           action: test
           result-bundle-path: './TestResults/TestResults.xcresult'
-          additional-options: '-skipPackagePluginValidation'
+          skip-package-plugin-validation: true
 
       - name: Debug - List files in TestResults directory
         run: |

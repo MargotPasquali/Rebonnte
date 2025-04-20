@@ -16,12 +16,12 @@ class AddNewMedicineViewModelTests {
     
     var viewModel: AddNewMedicineViewModel!
     var mockService: MockMedicineDataService!
-    
+
     func setup() {
         mockService = MockMedicineDataService()
         viewModel = AddNewMedicineViewModel(medicineDataService: mockService)
     }
-    
+
     @Test
     func testAddMedicineSuccess() async throws {
         // Given
@@ -47,7 +47,7 @@ class AddNewMedicineViewModelTests {
         #expect(mockService.medicines.count == initialMedicinesCount + 1)
         #expect(mockService.medicines.contains { $0.name == "Ibuprofen" && $0.stock == 25 && $0.aisle == "C3" })
     }
-    
+
     @Test
     func testAddMedicineInvalidDataEmptyName() async throws {
         // Given
@@ -67,7 +67,7 @@ class AddNewMedicineViewModelTests {
         #expect(viewModel.isLoading == false)
         #expect(mockService.medicines.count == initialMedicinesCount)
     }
-    
+
     @Test
     func testAddMedicineInvalidDataEmptyAisle() async throws {
         // Given
@@ -87,7 +87,7 @@ class AddNewMedicineViewModelTests {
         #expect(viewModel.isLoading == false)
         #expect(mockService.medicines.count == initialMedicinesCount)
     }
-    
+
     @Test
     func testAddMedicineInvalidDataStockOutOfRange() async throws {
         // Given
@@ -107,7 +107,7 @@ class AddNewMedicineViewModelTests {
         #expect(viewModel.isLoading == false)
         #expect(mockService.medicines.count == initialMedicinesCount)
     }
-    
+
     @Test
     func testAddMedicineDuplicate() async throws {
         // Given
@@ -130,7 +130,7 @@ class AddNewMedicineViewModelTests {
         #expect(viewModel.isLoading == false)
         #expect(mockService.medicines.count == initialMedicinesCount)
     }
-    
+
     @Test
     func testAddMedicineFailureDuringAdd() async throws {
         // Given
@@ -152,7 +152,7 @@ class AddNewMedicineViewModelTests {
         #expect(viewModel.isLoading == false)
         #expect(mockService.medicines.count == initialMedicinesCount)
     }
-    
+
     @Test
     func testAddMedicineFailureDuringCheckDuplicate() async throws {
         // Given

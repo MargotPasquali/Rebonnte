@@ -16,27 +16,30 @@ class AisleListViewModelTests {
     
     let viewModel: AisleListViewModel
     let mockService: MockMedicineDataService
-    
+
     init() {
         mockService = MockMedicineDataService()
         viewModel = AisleListViewModel(medicineDataService: mockService)
     }
-    
+
     func resetState() {
-        mockService.aisles = ["A1", "B2"]
-        mockService.shouldThrowFetchAislesError = false
+        mockService.medicines = [
+            Medicine(id: "1", name: "Aspirin", stock: 50, aisle: "A1"),
+            Medicine(id: "2", name: "Paracetamol", stock: 30, aisle: "B2")
+        ]
+        mockService.shouldThrowObserveMedicinesWithoutSortError = false
         viewModel.aisles = []
         viewModel.isLoading = false
         viewModel.errorMessage = nil
     }
-    
+
     @Test
-    func testFetchAislesSuccess() async throws {
+    func testObserveAislesSuccess() async throws {
         // Given
         resetState()
         
         // When
-        await viewModel.fetchAisles()
+        viewModel.startObserving()
         
         try await Task.sleep(nanoseconds: 1_000_000_000)
         
@@ -45,21 +48,5 @@ class AisleListViewModelTests {
         #expect(viewModel.errorMessage == nil)
         #expect(viewModel.aisles == ["A1", "B2"])
     }
-    
-    @Test
-    func testFetchAislesFailure() async throws {
-        // Given
-        resetState()
-        mockService.shouldThrowFetchAislesError = true
-        
-        // When
-        await viewModel.fetchAisles()
-        
-        try await Task.sleep(nanoseconds: 1_000_000_000)
-        
-        // Then
-        #expect(viewModel.isLoading == false)
-        #expect(viewModel.errorMessage == "Failed to fetch aisle list.")
-        #expect(viewModel.aisles.isEmpty)
-    }
+
 }

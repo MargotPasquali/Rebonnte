@@ -1,39 +1,22 @@
-//
-//  MedicineDetailViewModel.swift
-//  MediStock
-//
-//  Created by Margot Pasquali on 02/04/2025.
-//
-
 import Foundation
 
 @MainActor
 final class MedicineDetailViewModel: ObservableObject {
-
     // MARK: - Error Enum
     enum MedicineDetailViewModelError: LocalizedError {
-        case failedToFetchMedicines
         case failedToDeleteMedicines
         case failedToModifyMedicine
-        case failedToFetchHistory
-
         var errorDescription: String? {
             switch self {
-            case .failedToFetchMedicines:
-                return "Failed to fetch medicines."
-            case .failedToDeleteMedicines:
-                return "Failed to delete medicines."
-            case .failedToModifyMedicine:
-                return "Failed to modify medicine."
-            case .failedToFetchHistory:
-                return "Failed to fetch history."
+            case .failedToDeleteMedicines: return "Échec de la suppression des médicaments."
+            case .failedToModifyMedicine: return "Échec de la modification du médicament."
             }
         }
     }
 
     // MARK: - Constants
     private let medicineDataService: MedicineDataService
-
+    
     // MARK: - Properties
     @Published var medicines: [Medicine] = []
     @Published var history: [HistoryEntry] = []
@@ -44,23 +27,33 @@ final class MedicineDetailViewModel: ObservableObject {
     init(medicineDataService: MedicineDataService = RemoteMedicineDataService()) {
         self.medicineDataService = medicineDataService
     }
-
     // MARK: - Functions
-    func fetchMedicines() async {
+    func startObservingMedicines() {
         isLoading = true
-        errorMessage = nil
-
         Task {
-            do {
-                let fetchedMedicines = try await medicineDataService.retrieveMedicines()
-                Task {@MainActor in
-                    self.medicines = fetchedMedicines
+            medicineDataService.observeMedicinesWithoutSort { [weak self] medicines in
+                Task { @MainActor in
+                    self?.medicines = medicines
+                    self?.isLoading = false
                 }
-            } catch {
-                errorMessage = MedicineDetailViewModelError.failedToFetchMedicines.localizedDescription
             }
         }
-        isLoading = false
+    }
+
+    func observeHistory(for medicine: Medicine) {
+        Task {
+            medicineDataService.observeMedicineHistory(for: medicine) { [weak self] history in
+                Task { @MainActor in
+                    self?.history = history
+                }
+            }
+        }
+    }
+
+    func stopObserving() {
+        Task {
+            medicineDataService.stopListening()
+        }
     }
 
     func deleteMedicines(at offsets: IndexSet) async {
@@ -68,9 +61,8 @@ final class MedicineDetailViewModel: ObservableObject {
         Task {
             do {
                 try await medicineDataService.removeMedicines(medicines: medicinesToDelete)
-                await fetchMedicines()
             } catch {
-                errorMessage = MedicineDetailViewModelError.failedToDeleteMedicines.localizedDescription
+                errorMessage = MedicineDetailViewModelError.failedToDeleteMedicines.errorDescription
             }
         }
     }
@@ -80,20 +72,7 @@ final class MedicineDetailViewModel: ObservableObject {
             do {
                 try await medicineDataService.modifyMedicine(medicine, user: user, changes: changes)
             } catch {
-                errorMessage = MedicineDetailViewModelError.failedToModifyMedicine.localizedDescription
-            }
-        }
-    }
-
-    func fetchHistory(for medicine: Medicine) async {
-        Task {
-            do {
-                let fetchedHistory = try await medicineDataService.retrieveMedicineHistory(for: medicine)
-                Task {@MainActor in
-                    self.history = fetchedHistory
-                }
-            } catch {
-                errorMessage = MedicineDetailViewModelError.failedToFetchHistory.localizedDescription
+                errorMessage = MedicineDetailViewModelError.failedToModifyMedicine.errorDescription
             }
         }
     }

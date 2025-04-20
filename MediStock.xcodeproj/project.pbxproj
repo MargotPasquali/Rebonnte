@@ -48,7 +48,6 @@
 		AE3C10FA2D9C2892001FAAB5 /* AisleRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE3C10F92D9C2892001FAAB5 /* AisleRowView.swift */; };
 		AE3C11552D9C3F9A001FAAB5 /* CustomLoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE3C11542D9C3F9A001FAAB5 /* CustomLoadingView.swift */; };
 		AE3E66042DA42C8D00DA5026 /* CustomSearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE3E66032DA42C8D00DA5026 /* CustomSearchBar.swift */; };
-		AE53F4232DAD51CF000A01E3 /* LoadMoreButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE53F4222DAD51CF000A01E3 /* LoadMoreButton.swift */; };
 		AE7917CD2D8DB740006D332A /* Righteous-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AE7917CC2D8DB740006D332A /* Righteous-Regular.ttf */; };
 		AE7917CF2D8DB76E006D332A /* Nunito-VariableFont_wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AE7917CE2D8DB76E006D332A /* Nunito-VariableFont_wght.ttf */; };
 		AE7CC2372DAFE26500E5B92A /* AisleListViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE7CC2362DAFE26500E5B92A /* AisleListViewModelTests.swift */; };
@@ -111,7 +110,6 @@
 		AE3C10F92D9C2892001FAAB5 /* AisleRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AisleRowView.swift; sourceTree = "<group>"; };
 		AE3C11542D9C3F9A001FAAB5 /* CustomLoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomLoadingView.swift; sourceTree = "<group>"; };
 		AE3E66032DA42C8D00DA5026 /* CustomSearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSearchBar.swift; sourceTree = "<group>"; };
-		AE53F4222DAD51CF000A01E3 /* LoadMoreButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadMoreButton.swift; sourceTree = "<group>"; };
 		AE7917CC2D8DB740006D332A /* Righteous-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Righteous-Regular.ttf"; sourceTree = "<group>"; };
 		AE7917CE2D8DB76E006D332A /* Nunito-VariableFont_wght.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Nunito-VariableFont_wght.ttf"; sourceTree = "<group>"; };
 		AE7917D02D8DB786006D332A /* MediStock-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "MediStock-Info.plist"; sourceTree = "<group>"; };
@@ -252,7 +250,6 @@
 		AE1F46132D9458F300348EF0 /* List Utilities */ = {
 			isa = PBXGroup;
 			children = (
-				AE53F4242DAD51D6000A01E3 /* Buttons */,
 				AE1F46142D94590E00348EF0 /* MedicineRowView.swift */,
 				AE3C10F72D9C2872001FAAB5 /* MedicineListRowView.swift */,
 				AE3C10F92D9C2892001FAAB5 /* AisleRowView.swift */,
@@ -287,14 +284,6 @@
 				AE3E66032DA42C8D00DA5026 /* CustomSearchBar.swift */,
 			);
 			path = Utilities;
-			sourceTree = "<group>";
-		};
-		AE53F4242DAD51D6000A01E3 /* Buttons */ = {
-			isa = PBXGroup;
-			children = (
-				AE53F4222DAD51CF000A01E3 /* LoadMoreButton.swift */,
-			);
-			path = Buttons;
 			sourceTree = "<group>";
 		};
 		AE7917CB2D8DB678006D332A /* Fonts */ = {
@@ -527,7 +516,6 @@
 				AE1F45B22D93006B00348EF0 /* SortOption.swift in Sources */,
 				AE3E66042DA42C8D00DA5026 /* CustomSearchBar.swift in Sources */,
 				AE1F45B02D92FFE400348EF0 /* User.swift in Sources */,
-				AE53F4232DAD51CF000A01E3 /* LoadMoreButton.swift in Sources */,
 				53E0D8992C06084700DE1134 /* ContentView.swift in Sources */,
 				AE3225412DA95EC600C46DFD /* MedicineDetailHistorySection.swift in Sources */,
 				53E0D8DC2C06099C00DE1134 /* Medicine.swift in Sources */,
