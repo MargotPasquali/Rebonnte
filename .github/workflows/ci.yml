@@ -20,16 +20,25 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Select Xcode 16
+      - name: Select Xcode 16.2
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '16'
+          xcode-version: '16.2'
+
+      - name: Set Xcode path
+        run: sudo xcode-select --switch /Applications/Xcode_16.2.app/Contents/Developer
 
       - name: Verify Xcode version
         run: xcodebuild -version
 
+      - name: List Xcode versions
+        run: ls /Applications | grep Xcode
+
       - name: List available simulators
         run: xcrun simctl list devices
+
+      - name: Test xcresulttool
+        run: xcrun xcresulttool version
 
       - name: Create GoogleService-Info.plist
         env:
@@ -54,6 +63,16 @@ jobs:
           ls -la .
           echo "Listing files in TestResults directory:"
           ls -la TestResults || echo "TestResults directory not found"
+          if [ -f ./TestResults/TestResults.xcresult ]; then
+            echo "xcresult file exists"
+            ls -lh ./TestResults/TestResults.xcresult
+          else
+            echo "xcresult file not found"
+          fi
+        if: always()
+
+      - name: Validate xcresult file
+        run: xcrun xcresulttool get --path ./TestResults/TestResults.xcresult --format json > /dev/null || echo "Invalid xcresult file"
         if: always()
 
       - name: Process Test Results
@@ -63,7 +82,7 @@ jobs:
           title: "MediStock Test Results"
           show-passed-tests: true
           show-code-coverage: true
-        if: always()
+        if: success() && always()
 
       - name: Upload Test Results Artifact
         uses: actions/upload-artifact@v4
