@@ -29,11 +29,10 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 @main
 struct MediStockApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-    var sessionStore: SessionStore
+    @StateObject private var sessionStore = SessionStore()
 
     init() {
         FirebaseApp.configure()
-        self.sessionStore = SessionStore()
     }
 
     var body: some Scene {

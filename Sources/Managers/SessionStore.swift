@@ -29,12 +29,16 @@ class SessionStore: ObservableObject {
         }
     }
 
+    // MARK: - Constants
+    private let userDataService: UserDataService
+
     // MARK: - Properties
     @Published var session: User?
     @Published var email: String = ""
     @Published var fullName: String = ""
     @Published var profileImageURL: String = ""
     @Published var errorMessage: String?
+    @Published var isLoading: Bool = false
 
     @Published var appearancePreference: AppearancePreference {
         didSet {
@@ -49,15 +53,16 @@ class SessionStore: ObservableObject {
     private let data = Firestore.firestore()
 
     // MARK: - Init
-    init() {
-        if let savedPreference = UserDefaults.standard.string(forKey: "appearancePreference"),
-           let preference = AppearancePreference(rawValue: savedPreference) {
-            appearancePreference = preference
-        } else {
-            appearancePreference = .system
+        init(userDataService: UserDataService = RemoteUserDataService()) {
+            self.userDataService = userDataService
+            if let savedPreference = UserDefaults.standard.string(forKey: "appearancePreference"),
+               let preference = AppearancePreference(rawValue: savedPreference) {
+                appearancePreference = preference
+            } else {
+                appearancePreference = .system
+            }
+            listen()
         }
-        listen()
-    }
 
     // MARK: - Functions
     func listen() {
@@ -149,4 +154,28 @@ class SessionStore: ObservableObject {
         }
         print("Finished fetchUserData at \(Date())")
     }
+
+    func updateUserName(newName: String) async throws {
+        isLoading = true
+        errorMessage = nil
+
+        // Vérifier si l'utilisateur est connecté
+        guard let userId = session?.id else {
+            errorMessage = "Utilisateur non connecté."
+            isLoading = false
+            throw SessionStoreError.userNotFound
+        }
+
+        do {
+            try await userDataService.updateUserName(userId: userId, newName: newName)
+            await fetchUserData(userId: userId)
+        } catch {
+            errorMessage = SessionStoreError.fetchUserDataFailed.localizedDescription
+            isLoading = false
+            throw error
+        }
+
+        isLoading = false
+    }
+
 }

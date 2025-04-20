@@ -1,0 +1,29 @@
+{
+  "configurations" : [
+    {
+      "id" : "66CA248A-50FD-4360-AE7D-53CC377B39B8",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:MediStock.xcodeproj",
+      "identifier" : "53E0D8922C06084700DE1134",
+      "name" : "MediStock"
+    }
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:MediStock.xcodeproj",
+        "identifier" : "53E0D8A22C06084900DE1134",
+        "name" : "MediStockTests"
+      }
+    }
+  ],
+  "version" : 1
+}
