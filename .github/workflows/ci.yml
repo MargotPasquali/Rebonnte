@@ -55,11 +55,15 @@ jobs:
           ls -la TestResults || echo "TestResults directory not found"
         if: always()
 
-      - name: Process Test Results
-        uses: kishikawakatsumi/xcresulttool@v1
-        with:
-          path: ./TestResults/TestResults.xcresult
-          upload-bundles: 'never'
+      - name: Check permissions of TestResults
+        run: |
+          ls -la ./TestResults
+          ls -la ./TestResults/TestResults.xcresult
+        if: always()
+
+      - name: Export Test Results
+        run: |
+          xcrun xcresulttool export --path ./TestResults/TestResults.xcresult --output-path ./TestResults/test-results.json --type json
         if: always()
 
       - name: Upload Test Results Artifact
