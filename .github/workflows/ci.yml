@@ -45,7 +45,8 @@ jobs:
             -scheme MediStock \
             -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.1' \
             -resultBundlePath ./TestResults/TestResults.xcresult \
-            -skipPackagePluginValidation
+            -skipPackagePluginValidation \
+            -disableAutomaticPackageResolution
 
       - name: Debug - List files in TestResults directory
         run: |
@@ -53,12 +54,6 @@ jobs:
           ls -la .
           echo "Listing files in TestResults directory:"
           ls -la TestResults || echo "TestResults directory not found"
-        if: always()
-
-      - name: Check permissions of TestResults
-        run: |
-          ls -la ./TestResults
-          ls -la ./TestResults/TestResults.xcresult
         if: always()
 
       - name: Export Test Diagnostics
