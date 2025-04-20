@@ -61,9 +61,9 @@ jobs:
           ls -la ./TestResults/TestResults.xcresult
         if: always()
 
-      - name: Export Test Results
+      - name: Export Test Diagnostics
         run: |
-          xcrun xcresulttool export --path ./TestResults/TestResults.xcresult --output-path ./TestResults/test-results.json --type json
+          xcrun xcresulttool export --path ./TestResults/TestResults.xcresult --output-path ./TestResults/diagnostics --type diagnostics
         if: always()
 
       - name: Upload Test Results Artifact
