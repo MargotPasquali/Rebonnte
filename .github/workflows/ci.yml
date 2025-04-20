@@ -66,9 +66,33 @@ jobs:
           xcrun xcresulttool export --legacy --path ./TestResults/TestResults.xcresult --output-path ./TestResults/diagnostics --type diagnostics
         if: always()
 
+      - name: Generate Code Coverage Report
+        run: |
+          xcrun xccov view --report --only-targets ./TestResults/TestResults.xcresult > ./TestResults/coverage.html
+        if: always()
+
+      - name: Export Test Results to JSON
+        run: |
+          xcrun xcresulttool get --format json --path ./TestResults/TestResults.xcresult > ./TestResults/test-results.json
+        if: always()
+
       - name: Upload Test Results Artifact
         uses: actions/upload-artifact@v4
         with:
           name: test-results
           path: ./TestResults/TestResults.xcresult
+        if: always()
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: ./TestResults/coverage.html
+        if: always()
+
+      - name: Upload Test Results JSON
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-json
+          path: ./TestResults/test-results.json
         if: always()
