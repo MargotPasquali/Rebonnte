@@ -53,7 +53,8 @@ jobs:
             -project MediStock.xcodeproj \
             -scheme MediStock \
             -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.1' \
-            -resultBundlePath ./TestResults/TestResults.xcresult
+            -resultBundlePath ./TestResults/TestResults.xcresult \
+            -disableAutomaticPackageResolution
 
       - name: Debug - List files in TestResults directory
         run: |
@@ -61,16 +62,12 @@ jobs:
           ls -la .
           echo "Listing files in TestResults directory:"
           ls -la TestResults || echo "TestResults directory not found"
-          if [ -f ./TestResults/TestResults.xcresult ]; then
-            echo "xcresult file exists"
+          if [ -d ./TestResults/TestResults.xcresult ]; then
+            echo "xcresult directory exists"
             ls -lh ./TestResults/TestResults.xcresult
           else
-            echo "xcresult file not found"
+            echo "xcresult directory not found"
           fi
-        if: always()
-
-      - name: Validate xcresult file
-        run: xcrun xcresulttool get --path ./TestResults/TestResults.xcresult --format json > /dev/null || echo "Invalid xcresult file"
         if: always()
 
       - name: Process Test Results
