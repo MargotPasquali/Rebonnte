@@ -102,7 +102,7 @@ jobs:
           title: 'MediStock Test Results'
           show-passed-tests: true
           show-code-coverage: true
-          upload-bundles: 'always'
+          upload-bundles: 'never'
         if: success() || failure()
 
       - name: Upload Test Results Artifact
