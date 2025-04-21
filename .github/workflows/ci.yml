@@ -14,7 +14,7 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: macos-latest
+    runs-on: macos-14-arm64
 
     steps:
       - name: Checkout repository
@@ -59,15 +59,23 @@ jobs:
           fi
         if: always()
 
-      - name: Try Direct xcrun Command
+      - name: Check xcresulttool Version and Try Direct Command
         run: |
-          echo "Trying direct xcrun command..."
-          xcrun xcresulttool get --path ./TestResults/TestResults.xcresult --format json > test_summary.json
+          echo "Checking xcresulttool version..."
+          xcrun xcresulttool version || echo "Failed to get xcresulttool version"
+          
+          echo "Trying direct xcrun command with verbose output..."
+          xcrun xcresulttool get --path ./TestResults/TestResults.xcresult --format json > test_summary.json 2>xcrun_error.log || {
+            echo "Command failed with exit code $?"
+            echo "Error output:"
+            cat xcrun_error.log
+          }
+          
           ls -la test_summary.json || echo "Failed to create test_summary.json"
         if: always()
         continue-on-error: true
 
-      - name: Process Test Results (Option 1)
+      - name: Process Test Results
         uses: kishikawakatsumi/xcresulttool@v1
         with:
           path: ./TestResults/TestResults.xcresult
@@ -75,31 +83,40 @@ jobs:
           upload-bundles: 'never'
         if: always()
         continue-on-error: true
-        
-      - name: Process Test Results (Option 2)
-        uses: wix/xcresult-action@v1
-        with:
-          path: ./TestResults/TestResults.xcresult
-        if: always()
-        continue-on-error: true
 
-      - name: Process Test Results (Option 3 - Custom Script)
+      - name: Process Test Results (Alternative Methods)
         run: |
-          echo "Extracting test results using custom script..."
+          echo "Extracting test results using alternative methods..."
           
           # Create a directory for the extracted results
           mkdir -p extracted_results
           
-          # Get the test summary
-          xcrun xcresulttool get --path ./TestResults/TestResults.xcresult --format json > extracted_results/summary.json
+          # Try using xccov to get code coverage
+          echo "Trying xccov for code coverage..."
+          xcrun xccov view --report ./TestResults/TestResults.xcresult > extracted_results/coverage_report.txt 2>xccov_error.log || {
+            echo "xccov command failed with exit code $?"
+            echo "Error output:"
+            cat xccov_error.log
+          }
           
-          # Extract basic test information
-          echo "Test Summary:" > extracted_results/test_report.txt
-          xcrun xcresulttool get --path ./TestResults/TestResults.xcresult --format json | grep -E "identifier|name|status" | head -n 50 >> extracted_results/test_report.txt
+          # Try using xcrun with different options
+          echo "Trying xcrun with different options..."
+          xcrun xcresulttool formatDescription --path ./TestResults/TestResults.xcresult > extracted_results/format_description.txt 2>/dev/null || echo "formatDescription failed"
           
-          # Print the first few lines of the report
-          echo "Test Report Preview:"
-          head -n 20 extracted_results/test_report.txt
+          # Try listing actions
+          echo "Trying to list actions..."
+          xcrun xcresulttool actions --path ./TestResults/TestResults.xcresult > extracted_results/actions.txt 2>/dev/null || echo "actions command failed"
+          
+          # Try a simpler approach - just check if the bundle exists and has content
+          echo "Basic bundle information:" > extracted_results/basic_info.txt
+          ls -la ./TestResults/TestResults.xcresult >> extracted_results/basic_info.txt
+          find ./TestResults/TestResults.xcresult -type f | head -n 20 >> extracted_results/basic_info.txt
+          
+          # Print some information
+          echo "Extraction results:"
+          ls -la extracted_results/
+          echo "Basic info preview:"
+          head -n 10 extracted_results/basic_info.txt
         if: always()
         continue-on-error: true
 
