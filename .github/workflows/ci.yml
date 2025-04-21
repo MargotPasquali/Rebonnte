@@ -40,10 +40,9 @@ jobs:
         with:
           project: MediStock.xcodeproj
           scheme: MediStock
-          destination: 'platform=iOS Simulator,name=iPhone 16,OS=18.1'
+          destination: 'platform=iOS Simulator,name=iPhone 16 Pro'
           action: test
           result-bundle-path: './TestResults/TestResults.xcresult'
-          disable-automatic-package-resolution: true
           skip-package-plugin-validation: true
 
       - name: Debug - List files in TestResults directory
@@ -60,20 +59,55 @@ jobs:
           fi
         if: always()
 
-      - name: Process Test Results
+      - name: Try Direct xcrun Command
+        run: |
+          echo "Trying direct xcrun command..."
+          xcrun xcresulttool get --path ./TestResults/TestResults.xcresult --format json > test_summary.json
+          ls -la test_summary.json || echo "Failed to create test_summary.json"
+        if: always()
+        continue-on-error: true
+
+      - name: Process Test Results (Option 1)
         uses: kishikawakatsumi/xcresulttool@v1
         with:
           path: ./TestResults/TestResults.xcresult
-          title: "MediStock Test Results"
-          show-passed-tests: true
-          show-code-coverage: true
           token: ${{ secrets.GITHUB_TOKEN }}
-          upload-bundles: always
+          upload-bundles: 'never'
         if: always()
+        continue-on-error: true
+        
+      - name: Process Test Results (Option 2)
+        uses: wix/xcresult-action@v1
+        with:
+          path: ./TestResults/TestResults.xcresult
+        if: always()
+        continue-on-error: true
+
+      - name: Process Test Results (Option 3 - Custom Script)
+        run: |
+          echo "Extracting test results using custom script..."
+          
+          # Create a directory for the extracted results
+          mkdir -p extracted_results
+          
+          # Get the test summary
+          xcrun xcresulttool get --path ./TestResults/TestResults.xcresult --format json > extracted_results/summary.json
+          
+          # Extract basic test information
+          echo "Test Summary:" > extracted_results/test_report.txt
+          xcrun xcresulttool get --path ./TestResults/TestResults.xcresult --format json | grep -E "identifier|name|status" | head -n 50 >> extracted_results/test_report.txt
+          
+          # Print the first few lines of the report
+          echo "Test Report Preview:"
+          head -n 20 extracted_results/test_report.txt
+        if: always()
+        continue-on-error: true
 
       - name: Upload Test Results Artifact
         uses: actions/upload-artifact@v4
         with:
           name: test-results
-          path: ./TestResults/TestResults.xcresult
+          path: |
+            ./TestResults/TestResults.xcresult
+            ./extracted_results
         if: always()
