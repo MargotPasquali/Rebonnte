@@ -67,6 +67,8 @@ jobs:
           title: "MediStock Test Results"
           show-passed-tests: true
           show-code-coverage: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          upload-bundles: always
         if: always()
 
       - name: Upload Test Results Artifact
