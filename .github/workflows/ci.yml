@@ -64,113 +64,50 @@ jobs:
           fi
         if: always()
 
-      - name: Extract Test Results with Legacy Flag
+      - name: Create xcrun wrapper for Xcode 16.2 compatibility
         run: |
-          echo "Extracting test results with legacy flag..."
+          echo "Creating xcrun wrapper script to add --legacy flag..."
           
-          # Create a directory for the extracted results
-          mkdir -p extracted_results
+          # Create a bin directory for our wrapper script
+          mkdir -p $HOME/bin
           
-          # Try using xcresulttool with legacy flag
-          echo "Trying xcresulttool with legacy flag..."
-          xcrun xcresulttool get object --legacy --path ./TestResults/TestResults.xcresult --format json > extracted_results/test_summary.json 2>xcrun_error.log || {
-            echo "Command failed with exit code $?"
-            echo "Error output:"
-            cat xcrun_error.log
-          }
+          # Create the wrapper script
+          cat > $HOME/bin/xcrun << 'EOF'
+          #!/bin/bash
           
-          # Check if the file was created
-          ls -la extracted_results/test_summary.json || echo "Failed to create test_summary.json"
+          # Check if the command is xcresulttool get
+          if [[ "$1" == "xcresulttool" && "$2" == "get" && "$3" != "object" ]]; then
+            echo "Intercepting xcresulttool get command to add --legacy flag" >&2
+            /usr/bin/xcrun xcresulttool get object --legacy "${@:3}"
+          else
+            # Pass through to the real xcrun
+            /usr/bin/xcrun "$@"
+          fi
+          EOF
+          
+          # Make the script executable
+          chmod +x $HOME/bin/xcrun
+          
+          # Add our bin directory to the beginning of the PATH
+          echo "PATH=$HOME/bin:$PATH" >> $GITHUB_ENV
+          
+          echo "Wrapper script created and added to PATH"
         if: always()
-        continue-on-error: true
 
-      - name: Generate Human-Readable Test Report
-        run: |
-          echo "Generating human-readable test report..."
-          
-          # Create a directory for the reports
-          mkdir -p test_reports
-          
-          # Generate HTML coverage report
-          echo "Generating HTML coverage report..."
-          xcrun xccov view --report --html ./TestResults/TestResults.xcresult > test_reports/coverage_report.html 2>/dev/null || echo "HTML coverage report generation failed"
-          
-          # Generate a formatted test summary
-          echo "Generating test summary report..."
-          
-          # Create a markdown report header
-          cat > test_reports/test_summary.md << EOF
-          # MediStock Test Results
-          
-          ## Test Summary
-          
-          EOF
-          
-          # Extract test summary information and append to markdown
-          xcrun xcresulttool get --format json --path ./TestResults/TestResults.xcresult | grep -E "testsCount|failureCount|errorCount" | sed 's/[",:]//g' | sed 's/^ *//' >> test_reports/test_summary.md || echo "Failed to extract test counts"
-          
-          # Add coverage information to the report
-          echo -e "\n## Code Coverage Summary\n" >> test_reports/test_summary.md
-          xcrun xccov view --report ./TestResults/TestResults.xcresult | head -n 10 >> test_reports/test_summary.md || echo "Failed to extract coverage summary"
-          
-          # Try to extract test details
-          echo -e "\n## Test Details\n" >> test_reports/test_summary.md
-          xcrun xcresulttool get --format human-readable --path ./TestResults/TestResults.xcresult >> test_reports/test_details.txt 2>/dev/null || echo "Failed to extract test details"
-          
-          # Create a simple HTML report that combines all information
-          cat > test_reports/index.html << EOF
-          <!DOCTYPE html>
-          <html>
-          <head>
-            <title>MediStock Test Results</title>
-            <style>
-              body { font-family: Arial, sans-serif; margin: 20px; }
-              h1 { color: #333; }
-              h2 { color: #666; margin-top: 30px; }
-              pre { background-color: #f5f5f5; padding: 10px; border-radius: 5px; overflow-x: auto; }
-              .summary { background-color: #e6f7ff; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
-              .coverage { background-color: #f0f7e6; padding: 15px; border-radius: 5px; }
-            </style>
-          </head>
-          <body>
-            <h1>MediStock Test Results</h1>
-            
-            <div class="summary">
-              <h2>Test Summary</h2>
-              <pre>$(cat test_reports/test_summary.md | grep -E "testsCount|failureCount|errorCount" || echo "No test summary available")</pre>
-            </div>
-            
-            <div class="coverage">
-              <h2>Code Coverage</h2>
-              <pre>$(xcrun xccov view --report ./TestResults/TestResults.xcresult | head -n 10 || echo "No coverage data available")</pre>
-              <p><a href="coverage_report.html">View Full Coverage Report</a></p>
-            </div>
-            
-            <h2>Test Details</h2>
-            <pre>$(head -n 50 test_reports/test_details.txt 2>/dev/null || echo "No detailed test information available")</pre>
-          </body>
-          </html>
-          EOF
-          
-          echo "Test reports generated:"
-          ls -la test_reports/
-        if: always()
-        continue-on-error: true
+      - name: Process Test Results with kishikawakatsumi/xcresulttool
+        uses: kishikawakatsumi/xcresulttool@v1
+        with:
+          path: ./TestResults/TestResults.xcresult
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: 'MediStock Test Results'
+          show-passed-tests: true
+          show-code-coverage: true
+          upload-bundles: 'always'
+        if: success() || failure()
 
       - name: Upload Test Results Artifact
         uses: actions/upload-artifact@v4
         with:
           name: test-results
-          path: |
-            ./TestResults/TestResults.xcresult
-            ./extracted_results
-            ./test_reports
-        if: always()
-        
-      - name: Upload HTML Report as GitHub Pages Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: test-report-html
-          path: ./test_reports
-          if-no-files-found: warn
+          path: ./TestResults/TestResults.xcresult
         if: always()
