@@ -25,20 +25,8 @@ jobs:
         with:
           xcode-version: '16.2'
 
-      - name: Set Xcode path
-        run: sudo xcode-select --switch /Applications/Xcode_16.2.app/Contents/Developer
-
       - name: Verify Xcode version
         run: xcodebuild -version
-
-      - name: List Xcode versions
-        run: ls /Applications | grep Xcode
-
-      - name: List available simulators
-        run: xcrun simctl list devices
-
-      - name: Test xcresulttool
-        run: xcrun xcresulttool version
 
       - name: Create GoogleService-Info.plist
         env:
@@ -48,13 +36,15 @@ jobs:
           echo "$GOOGLE_SERVICE_PLIST" > Sources/GoogleService-Info.plist
 
       - name: Build and Test
-        run: |
-          xcodebuild test -verbose \
-            -project MediStock.xcodeproj \
-            -scheme MediStock \
-            -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.1' \
-            -resultBundlePath ./TestResults/TestResults.xcresult \
-            -disableAutomaticPackageResolution
+        uses: sersoft-gmbh/xcodebuild-action@v3.2.0
+        with:
+          project: MediStock.xcodeproj
+          scheme: MediStock
+          destination: 'platform=iOS Simulator,name=iPhone 16,OS=18.1'
+          action: test
+          result-bundle-path: './TestResults/TestResults.xcresult'
+          disable-automatic-package-resolution: true
+          skip-package-plugin-validation: true
 
       - name: Debug - List files in TestResults directory
         run: |
