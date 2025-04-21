@@ -14,7 +14,7 @@ on:
 
 jobs:
   build-and-test:
-    runs-on: macos-14-arm64
+    runs-on: macos-latest
 
     steps:
       - name: Checkout repository
@@ -27,6 +27,11 @@ jobs:
 
       - name: Verify Xcode version
         run: xcodebuild -version
+        
+      - name: List available simulators
+        run: xcrun simctl list devices
+        if: always()
+        continue-on-error: true
 
       - name: Create GoogleService-Info.plist
         env:
@@ -80,9 +85,11 @@ jobs:
         with:
           path: ./TestResults/TestResults.xcresult
           token: ${{ secrets.GITHUB_TOKEN }}
-          upload-bundles: 'never'
-        if: always()
-        continue-on-error: true
+          upload-bundles: 'always'
+          title: 'MediStock Test Results'
+          show-passed-tests: true
+          show-code-coverage: true
+        if: success() || failure()
 
       - name: Process Test Results (Alternative Methods)
         run: |
