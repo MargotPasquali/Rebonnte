@@ -48,14 +48,12 @@ jobs:
           echo "$GOOGLE_SERVICE_PLIST" > Sources/GoogleService-Info.plist
 
       - name: Build and Test
-        uses: sersoft-gmbh/xcodebuild-action@v3.2.0
-        with:
-          project: MediStock.xcodeproj
-          scheme: MediStock
-          destination: 'platform=iOS Simulator,name=iPhone 16,OS=18.1'
-          action: test
-          result-bundle-path: './TestResults/TestResults.xcresult'
-          skip-package-plugin-validation: true
+        run: |
+          xcodebuild test -verbose \
+            -project MediStock.xcodeproj \
+            -scheme MediStock \
+            -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.1' \
+            -resultBundlePath ./TestResults/TestResults.xcresult
 
       - name: Debug - List files in TestResults directory
         run: |
@@ -82,7 +80,7 @@ jobs:
           title: "MediStock Test Results"
           show-passed-tests: true
           show-code-coverage: true
-        if: success() && always()
+        if: always()
 
       - name: Upload Test Results Artifact
         uses: actions/upload-artifact@v4
