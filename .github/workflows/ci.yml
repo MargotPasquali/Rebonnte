@@ -5,10 +5,12 @@ on:
     branches:
       - main
       - develop
+      - update-ci
   pull_request:
     branches:
       - main
       - develop
+      - update-ci
 
 jobs:
   build-and-test:
@@ -17,6 +19,19 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Select Xcode 16.2
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.2'
+
+      - name: Verify Xcode version
+        run: xcodebuild -version
+        
+      - name: List available simulators
+        run: xcrun simctl list devices
+        if: always()
+        continue-on-error: true
 
       - name: Create GoogleService-Info.plist
         env:
@@ -41,14 +56,54 @@ jobs:
           ls -la .
           echo "Listing files in TestResults directory:"
           ls -la TestResults || echo "TestResults directory not found"
+          if [ -d ./TestResults/TestResults.xcresult ]; then
+            echo "xcresult directory exists"
+            ls -lh ./TestResults/TestResults.xcresult
+          else
+            echo "xcresult directory not found"
+          fi
         if: always()
 
-      - name: Process Test Results
+      - name: Create xcrun wrapper for Xcode 16.2 compatibility
+        run: |
+          echo "Creating xcrun wrapper script to add --legacy flag..."
+          
+          # Create a bin directory for our wrapper script
+          mkdir -p $HOME/bin
+          
+          # Create the wrapper script
+          cat > $HOME/bin/xcrun << 'EOF'
+          #!/bin/bash
+          
+          # Check if the command is xcresulttool get
+          if [[ "$1" == "xcresulttool" && "$2" == "get" && "$3" != "object" ]]; then
+            echo "Intercepting xcresulttool get command to add --legacy flag" >&2
+            /usr/bin/xcrun xcresulttool get object --legacy "${@:3}"
+          else
+            # Pass through to the real xcrun
+            /usr/bin/xcrun "$@"
+          fi
+          EOF
+          
+          # Make the script executable
+          chmod +x $HOME/bin/xcrun
+          
+          # Add our bin directory to the beginning of the PATH
+          echo "PATH=$HOME/bin:$PATH" >> $GITHUB_ENV
+          
+          echo "Wrapper script created and added to PATH"
+        if: always()
+
+      - name: Process Test Results with kishikawakatsumi/xcresulttool
         uses: kishikawakatsumi/xcresulttool@v1
         with:
           path: ./TestResults/TestResults.xcresult
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: 'MediStock Test Results'
+          show-passed-tests: true
+          show-code-coverage: true
           upload-bundles: 'never'
-        if: always()
+        if: success() || failure()
 
       - name: Upload Test Results Artifact
         uses: actions/upload-artifact@v4
