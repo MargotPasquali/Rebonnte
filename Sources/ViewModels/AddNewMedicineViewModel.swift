@@ -103,4 +103,6 @@ final class AddNewMedicineViewModel: ObservableObject {
         stock = 0
         aisle = ""
     }
+    
+//    test ci
 }
